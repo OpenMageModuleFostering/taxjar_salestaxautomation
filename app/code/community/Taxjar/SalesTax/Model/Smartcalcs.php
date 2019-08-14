@@ -72,7 +72,6 @@ class Taxjar_SalesTax_Model_Smartcalcs
         );
 
         $order = array_merge($fromAddress, $toAddress, array(
-            'amount' => (float) $address->getSubtotal(),
             'shipping' => (float) $address->getShippingAmount(),
             'line_items' => $this->_getLineItems($address),
             'nexus_addresses' => $this->_getNexusAddresses(),
@@ -194,6 +193,20 @@ class Taxjar_SalesTax_Model_Smartcalcs
                 $taxCode = $taxClass->getTjSalestaxCode();
                 $unitPrice = (float) $item->getPrice();
                 $discount = (float) $item->getDiscountAmount();
+
+                if (Mage::getEdition() == 'Enterprise') {
+                    if ($item->getProductType() == Enterprise_GiftCard_Model_Catalog_Product_Type_Giftcard::TYPE_GIFTCARD) {
+                        $giftTaxClassId = Mage::getStoreConfig('tax/classes/wrapping_tax_class');
+                        $giftTaxClass = Mage::getModel('tax/class')->load($giftTaxClassId);
+                        $giftTaxClassCode = $giftTaxClass->getTjSalestaxCode();
+                        
+                        if ($giftTaxClassCode) {
+                            $taxCode = $giftTaxClassCode;
+                        } else {
+                            $taxCode = '99999';
+                        }
+                    }
+                }
 
                 if ($unitPrice) {
                     array_push($lineItems, array(
