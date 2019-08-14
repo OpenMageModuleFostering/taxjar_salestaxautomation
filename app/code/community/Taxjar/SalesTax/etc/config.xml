@@ -6,7 +6,7 @@
 -->
 <config>    
   <modules>
-     <Taxjar_SalesTax><version>1.2.2</version></Taxjar_SalesTax>
+     <Taxjar_SalesTax><version>1.3.0</version></Taxjar_SalesTax>
   </modules>
   <global>
     <helpers>
@@ -17,7 +17,12 @@
       <models>
           <taxjar>
               <class>Taxjar_SalesTax_Model</class>
-          </taxjar>   
+          </taxjar>
+          <tax_resource>
+              <rewrite>
+                  <calculation>Taxjar_SalesTax_Model_Calculation</calculation>
+              </rewrite>
+          </tax_resource>
       </models>
       <blocks>
         <taxjar>

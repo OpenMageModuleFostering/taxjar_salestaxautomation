@@ -43,7 +43,7 @@ class Taxjar_SalesTax_Model_Observer {
 
       if( ! $configJson['allow_update'] ) {
         $dateUpdated = Mage::getStoreConfig('taxjar/config/last_update');
-        Mage::getSingleton('core/session')->addNotice("Your rates are already up to date. Date of last update: " . $dateUpdated);
+        Mage::getSingleton('core/session')->addNotice("Your last rate update was too recent. Please wait at least 5 minutes and try again.");
         return;
       }
 
