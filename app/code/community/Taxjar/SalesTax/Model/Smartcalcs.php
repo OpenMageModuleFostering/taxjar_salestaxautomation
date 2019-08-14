@@ -216,6 +216,10 @@ class Taxjar_SalesTax_Model_Smartcalcs
                 $unitPrice = (float) $item->getPrice();
                 $discount = (float) $item->getDiscountAmount();
 
+                if ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) {
+                    continue;
+                }
+
                 if (Mage::getEdition() == 'Enterprise') {
                     if ($item->getProductType() == Enterprise_GiftCard_Model_Catalog_Product_Type_Giftcard::TYPE_GIFTCARD) {
                         $giftTaxClassId = Mage::getStoreConfig('tax/classes/wrapping_tax_class');
