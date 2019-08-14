@@ -328,4 +328,4 @@ class Taxjar_SalesTax_Model_Configuration {
   }
 
 }
-?>
+

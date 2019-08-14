@@ -37,4 +37,4 @@ class Taxjar_SalesTax_Model_Calculation extends Mage_Tax_Model_Resource_Calculat
     }
 
 }
-?>
+

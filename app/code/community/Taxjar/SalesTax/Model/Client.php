@@ -24,7 +24,6 @@ class Taxjar_SalesTax_Model_Client {
     else {
       throw new Exception('Could not connect to TaxJar.');
     }
-
   }  
 
   /**
@@ -43,4 +42,3 @@ class Taxjar_SalesTax_Model_Client {
 
 }
 
-?>

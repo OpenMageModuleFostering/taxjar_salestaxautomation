@@ -43,4 +43,4 @@ class Taxjar_SalesTax_Model_Debug {
   }
 
 }
-?>
+
