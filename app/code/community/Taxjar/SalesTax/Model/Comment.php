@@ -24,7 +24,7 @@ class Taxjar_SalesTax_Model_Comment {
       return $this->buildInstalledHtml( $statesHtml, $lastUpdate );
     }
     else {
-      return $this->buildNotYetInstalledHtml( fullStateName( $regionCode ) );
+      return $this->buildNotYetInstalledHtml( $this->fullStateName( $regionCode ) );
     }
 
   }

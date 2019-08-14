@@ -3,7 +3,7 @@
     "type": "magento-module",
     "license": "MITL",
     "homepage": "",
-    "description": "Easily collect sales tax without altering your Magento store’s checkout experience or performance. ",
+    "description": "Easily collect sales tax without altering your Magento store’s checkout experience or performance.",
     "authors": [
     {
         "name": "TaxJar",
