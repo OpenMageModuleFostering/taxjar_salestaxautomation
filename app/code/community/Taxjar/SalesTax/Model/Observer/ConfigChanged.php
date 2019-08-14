@@ -30,6 +30,7 @@ class Taxjar_SalesTax_Model_Observer_ConfigChanged
 
         if (isset($prevEnabled)) {
             if($prevEnabled != $enabled && $enabled == 1) {
+                Mage::dispatchEvent('taxjar_salestax_import_categories');
                 Mage::dispatchEvent('taxjar_salestax_import_data');
             }
         }
@@ -42,6 +43,7 @@ class Taxjar_SalesTax_Model_Observer_ConfigChanged
 
         if (isset($prevEnabled)) {
             if($prevEnabled != $enabled) {
+                Mage::dispatchEvent('taxjar_salestax_import_categories');
                 Mage::dispatchEvent('taxjar_salestax_import_data');
                 Mage::dispatchEvent('taxjar_salestax_import_rates');
             }

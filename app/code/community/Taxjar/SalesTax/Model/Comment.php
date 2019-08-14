@@ -50,14 +50,24 @@ class Taxjar_SalesTax_Model_Comment
      */
     private function _buildConnectedHtml()
     {
+        $disconnectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/disconnect');
+
         $htmlString = "<p class='note'><span>Sales tax calculations at checkout for improved accuracy and product exemptions. Magento's zip-based rates can be used as a fallback.</span></p><br/>";
         $htmlString .= "<p class='note'><span>TaxJar Account</span></p>";
         $htmlString .= "<ul class='messages'><li class='success-msg'><span style='font-size: 1.4em'>" . $this->_apiEmail . "</span></li></ul>";
+        $htmlString .= <<<EOT
+        <p><button type='button' class='scalable' onclick='window.open("https://app.taxjar.com/account", "_blank")'><span>Manage Account</span></button>&nbsp;&nbsp;or&nbsp;&nbsp;<a href='#' onclick='if (window.confirm("Are you sure you want to disconnect from TaxJar? This will remove all TaxJar rates from your Magento store. If you have a paid TaxJar subscription, manage your account at https://app.taxjar.com.")) window.location="{$disconnectUrl}"; return false'>Disconnect TaxJar</a></p><br/>
+EOT;
         $htmlString .= "<p class='note'><span>Getting Started</span></p><p></p>";
         $htmlString .= "<p><a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/tax_nexus/index') . "'>Nexus Addresses</a><br/><span style='font-size: 0.9em'>Before enabling SmartCalcs, set up your nexus addresses so TaxJar knows where to collect sales tax.</span></p>";
         $htmlString .= "<p><a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/tax_class_product/index') . "'>Product Tax Classes</a><br/><span style='font-size: 0.9em'>If some of your products are tax-exempt, assign a TaxJar category tax code for new or existing product tax classes.</span></p>";
+        $htmlString .= "<p><a href='http://www.taxjar.com/guides/integrations/magento/' target='_blank'>Extension User Guide</a><br/><span style='font-size: 0.9em'>Read our comprehensive Magento guide on how to configure your store properly for sales tax calculations and reporting.</span></p>";
         $htmlString .= "<p><a href='http://www.taxjar.com/contact/' target='_blank'>Help & Support</a><br/><span style='font-size: 0.9em'>Need help setting up SmartCalcs? Get in touch with our Magento sales tax experts.</span></p><br/>";
-        $htmlString .= $this->_buildConnectionHtml();
+        $htmlString .= <<<EOT
+        <p><button type='button' class='scalable' onclick='window.open("https://app.taxjar.com", "_blank")'><span>View Sales Tax Reports</span></button></p>
+EOT;
+        $htmlString .= "<p class='note'>Import your Magento transactions into TaxJar for automated sales tax reporting and filing.</p><br/>";
+
         return $htmlString;
     }
     
@@ -86,52 +96,49 @@ class Taxjar_SalesTax_Model_Comment
         $popupUrl = $authUrl . '/smartcalcs/connect/magento/?store=' . urlencode($this->_getStoreOrigin());
         $guideUrl = 'http://www.taxjar.com/guides/integrations/magento/';
         $connectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/connect');
-        $disconnectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/disconnect');
+        $connectUrl .= (parse_url($connectUrl, PHP_URL_QUERY) ? '&' : '?');
+        $pluginVersion = Mage::getConfig()->getModuleConfig('Taxjar_SalesTax')->version;
         
         if ($this->_getStoreGeneralEmail()) {
             $popupUrl .= '&email=' . urlencode($this->_getStoreGeneralEmail());
         }
         
-        if (!$this->_apiKey) {
-            $htmlString = <<<EOT
-            <br/><p><button type='button' class='scalable' onclick='openConnectPopup("{$popupUrl}", "Connect to TaxJar", 400, 500)'><span>Connect to TaxJar</span></button>&nbsp;&nbsp;<button type='button' class='scalable' onclick='window.open("{$guideUrl}", "_blank")'><span>Learn More</span></button></p>
-            <script>
-                function openConnectPopup(url, title, w, h) {
-                    var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
-                    var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
-                    var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
-                    var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
-                    var left = ((width / 2) - (w / 2)) + dualScreenLeft;
-                    var top = ((height / 2) - (h / 2)) + dualScreenTop;
-                    
-                    window.connectPopup = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
+        $popupUrl .= '&plugin=magento&version=' . $pluginVersion;
+        
+        $htmlString = <<<EOT
+        <br/><p><button type='button' class='scalable' onclick='openConnectPopup("{$popupUrl}", "Connect to TaxJar", 400, 500)'><span>Connect to TaxJar</span></button>&nbsp;&nbsp;<button type='button' class='scalable' onclick='window.open("{$guideUrl}", "_blank")'><span>Learn More</span></button></p>
+        <script>
+            function openConnectPopup(url, title, w, h) {
+                var dualScreenLeft = window.screenLeft != undefined ? window.screenLeft : screen.left;
+                var dualScreenTop = window.screenTop != undefined ? window.screenTop : screen.top;
+                var width = window.innerWidth ? window.innerWidth : document.documentElement.clientWidth ? document.documentElement.clientWidth : screen.width;
+                var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
+                var left = ((width / 2) - (w / 2)) + dualScreenLeft;
+                var top = ((height / 2) - (h / 2)) + dualScreenTop;
+                
+                window.connectPopup = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
-                    if (window.focus) window.connectPopup.focus();
+                if (window.focus) window.connectPopup.focus();
+            }
+        
+            window.addEventListener('message', function(e) {
+                if (e.origin !== '{$authUrl}')
+                    return;
+                
+                try {
+                    var data = JSON.parse(e.data);
+                    if (data.api_token && data.email) {
+                        window.connectPopup.postMessage('Data received', '{$authUrl}');
+                        window.location = encodeURI('{$connectUrl}api_key=' + data.api_token + '&api_email=' + data.email);
+                    } else {
+                        throw 'Invalid data';
+                    }                        
+                } catch(e) {
+                    alert('Invalid API token or email provided. Please try connecting to TaxJar again or contact support@taxjar.com.');
                 }
-            
-                window.addEventListener('message', function(e) {
-                    if (e.origin !== '{$authUrl}')
-                        return;
-                    
-                    try {
-                        var data = JSON.parse(e.data);
-                        if (data.api_token && data.email) {
-                            window.connectPopup.postMessage('Data received', '{$authUrl}');
-                            window.location = encodeURI('{$connectUrl}?api_key=' + data.api_token + '&api_email=' + data.email);
-                        } else {
-                            throw 'Invalid data';
-                        }                        
-                    } catch(e) {
-                        alert('Invalid API token or email provided. Please try connecting to TaxJar again or contact support@taxjar.com.');
-                    }
-                }, false);
-            </script>
+            }, false);
+        </script>
 EOT;
-        } else {
-            $htmlString = <<<EOT
-            <p><button type='button' class='scalable delete' onclick='if (window.confirm("Are you sure you want to disconnect from TaxJar? This will remove all TaxJar rates from your Magento store. If you have a paid TaxJar subscription, manage your account at https://app.taxjar.com.")) window.location="{$disconnectUrl}"'><span>Disconnect TaxJar</span></button>&nbsp;&nbsp;<button type='button' class='scalable' onclick='window.open("{$guideUrl}", "_blank")'><span>Learn More</span></button></p><br/>
-EOT;
-        }
 
         return $htmlString;
     }
@@ -144,7 +151,7 @@ EOT;
      */
     private function _getStoreOrigin()
     {
-        $protocol = isset($_SERVER['HTTPS']) ? 'https://' : 'http://';
+        $protocol = Mage::app()->getRequest()->isSecure() ? 'https://' : 'http://';
         return $protocol . $_SERVER['HTTP_HOST'];
     }
     

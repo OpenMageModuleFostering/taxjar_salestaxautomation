@@ -47,9 +47,8 @@ class Taxjar_SalesTax_Model_Debug
     private function _getDebugHtmlString()
     {
         $states         = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
-        $apiUser        = Mage::getModel('api/user');
-        $existingUserId = $apiUser->load('taxjar', 'username')->getUserId();
-        $pluginVersion  = '2.3.0';
+        $apiUserId      = Mage::getModel('api/user')->load('taxjar', 'username')->getUserId();
+        $pluginVersion  = Mage::getConfig()->getModuleConfig('Taxjar_SalesTax')->version;
         $phpMemory      = @ini_get('memory_limit');
         $phpVersion     = @phpversion();
         $magentoVersion = Mage::getVersion();
@@ -59,6 +58,6 @@ class Taxjar_SalesTax_Model_Debug
             $states = implode(',', $states);
         }
 
-        return "<ul> <li><strong>Additional States:</strong> ". $states ."</li> <li><strong>API User ID:</strong> ". $existingUserId ."</li><li><strong>Memory:</strong> ". $phpMemory ."</li> <li><strong>TaxJar Version:</strong> ". $pluginVersion ."</li> <li><strong>PHP Version</strong> ". $phpVersion ."</li> <li><strong>Magento Version:</strong> ". $magentoVersion ."</li> <li><strong>Last Updated:</strong> ". $lastUpdated ."</li> </ul><br/><p><small><strong>Include the above information when emailing TaxJar support at support@taxjar.com</strong><small></p>";
+        return "<ul> <li><strong>Additional States:</strong> ". $states ."</li> <li><strong>API User ID:</strong> ". $apiUserId ."</li><li><strong>Memory:</strong> ". $phpMemory ."</li> <li><strong>TaxJar Version:</strong> ". $pluginVersion ."</li> <li><strong>PHP Version</strong> ". $phpVersion ."</li> <li><strong>Magento Version:</strong> ". $magentoVersion ."</li> <li><strong>Last Updated:</strong> ". $lastUpdated ."</li> </ul><br/><p><small><strong>Include the above information when emailing TaxJar support at support@taxjar.com</strong><small></p>";
     }
 }

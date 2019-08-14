@@ -34,7 +34,12 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
             Mage::getConfig()->saveConfig('tax/taxjar/email', $apiEmail);
             Mage::getConfig()->saveConfig('tax/taxjar/connected', 1);
             Mage::getConfig()->reinit();
+            
+            $configuration = Mage::getModel('taxjar/configuration');
+            $configuration->setApiSettings($apiKey);
+            
             Mage::getSingleton('core/session')->addSuccess('TaxJar account for ' . $apiEmail . ' is now connected.');
+            Mage::dispatchEvent('taxjar_salestax_import_categories');
         } else {
             Mage::getSingleton('core/session')->addError('Could not connect your TaxJar account. Please make sure you have a valid API token and try again.');
         }
@@ -68,6 +73,7 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
     public function sync_ratesAction()
     {
         try {
+            Mage::dispatchEvent('taxjar_salestax_import_categories');
             Mage::dispatchEvent('taxjar_salestax_import_data');
             Mage::dispatchEvent('taxjar_salestax_import_rates');
         } catch (Exception $e) {

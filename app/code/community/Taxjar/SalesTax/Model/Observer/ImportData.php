@@ -37,18 +37,6 @@ class Taxjar_SalesTax_Model_Observer_ImportData
     }
     
     /**
-     * Get TaxJar product categories
-     *
-     * @param void
-     * @return string
-     */
-    private function _getCategoryJson()
-    {
-        $categoryJson = $this->_client->getResource($this->_apiKey, 'categories');
-        return $categoryJson['categories'];
-    }
-    
-    /**
      * Get TaxJar user account configuration
      *
      * @param void
@@ -70,14 +58,11 @@ class Taxjar_SalesTax_Model_Observer_ImportData
     {
         $configuration = Mage::getModel('taxjar/configuration');
         $configJson = $this->_getConfigJson();
-        $categoryJson = $this->_getCategoryJson();
 
         $configuration->setTaxBasis($configJson);
         $configuration->setShippingTaxability($configJson);
         $configuration->setDisplaySettings();
-        $configuration->setApiSettings($this->_apiKey);
 
-        Mage::getConfig()->saveConfig('tax/taxjar/categories', json_encode($categoryJson));
         Mage::getConfig()->saveConfig('tax/taxjar/states', serialize(explode(',', $configJson['states'])));
         Mage::getConfig()->saveConfig('tax/taxjar/freight_taxable', $configJson['freight_taxable']);
         Mage::getConfig()->reinit();
