@@ -18,9 +18,6 @@ class Taxjar_SalesTax_Model_Comment {
     $regionCode     = Mage::getModel('directory/region')->load( $regionId )->getCode();
     $lastUpdate     = Mage::getStoreConfig('taxjar/config/last_update');
 
-    // Plugin detect that state of nexus isn't in rates
-    // You should have at least X rates
-
     if( ! empty( $lastUpdate ) ){
       $states     = unserialize( Mage::getStoreConfig('taxjar/config/states') );
       $statesHtml = $this->buildStatesHtml( $states, $regionCode );

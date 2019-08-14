@@ -155,11 +155,12 @@ class Taxjar_SalesTax_Model_Observer {
       $existingRecords = Mage::getModel($path)->getCollection();
 
       foreach( $existingRecords as $record ) {
+
         try {
           $record->delete();
         }
         catch (Exception $e) {
-          Mage::getSingleton('core/session')->addError("There was an error deleting from Magento model " . $path;
+          Mage::getSingleton('core/session')->addError("There was an error deleting from Magento model " . $path);
         }
 
       }
