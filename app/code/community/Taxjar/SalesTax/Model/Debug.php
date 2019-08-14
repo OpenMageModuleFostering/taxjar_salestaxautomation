@@ -34,7 +34,7 @@ class Taxjar_SalesTax_Model_Debug {
     $states         = implode( ',', unserialize( Mage::getStoreConfig('taxjar/config/states') ) );
     $apiUser        = Mage::getModel('api/user');
     $existingUserId = $apiUser->load('taxjar', 'username')->getUserId();
-    $pluginVersion  = '1.4.2';
+    $pluginVersion  = '1.4.3';
     $phpMemory      = @ini_get('memory_limit');
     $phpVersion     = @phpversion();
     $magentoVersion = Mage::getVersion();

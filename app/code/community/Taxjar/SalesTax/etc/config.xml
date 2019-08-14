@@ -6,7 +6,7 @@
 -->
 <config>    
   <modules>
-     <Taxjar_SalesTax><version>1.4.2</version></Taxjar_SalesTax>
+     <Taxjar_SalesTax><version>1.4.3</version></Taxjar_SalesTax>
   </modules>
   <global>
     <helpers>
