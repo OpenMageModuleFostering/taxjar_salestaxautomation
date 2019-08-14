@@ -1,5 +1,4 @@
-<?xml version="1.0"?>
-<!--
+<?php
 /**
  * Taxjar_SalesTax
  *
@@ -15,12 +14,17 @@
  * @copyright  Copyright (c) 2016 TaxJar. TaxJar is a trademark of TPS Unlimited, Inc. (http://www.taxjar.com)
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
--->
-<config>
-    <modules>
-        <Taxjar_SalesTax>
-            <active>true</active>
-            <codePool>community</codePool>
-        </Taxjar_SalesTax>
-    </modules>
-</config>
+
+class Taxjar_SalesTax_Model_Observer_SalesQuoteCollectTotalsBefore
+{
+    public function execute(Varien_Event_Observer $observer)
+    {
+        $storeId = $observer->getEvent()->getQuote()->getStoreId();
+
+        if (Mage::getStoreConfig('taxjar/smartcalcs/enabled', $storeId)) {
+            Mage::getConfig()->setNode('global/sales/quote/totals/tax/class', 'Taxjar_SalesTax_Model_Sales_Total_Quote_Tax');
+        }
+
+        return $this;
+    }
+}
