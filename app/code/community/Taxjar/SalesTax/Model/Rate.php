@@ -85,7 +85,7 @@ class Taxjar_SalesTax_Model_Rate
   private function getRegionFilter()
   {
     $states = unserialize(Mage::getStoreConfig('taxjar/config/states'));
-    $filter = [];
+    $filter = array();
 
     foreach (array_unique($states) as $state) {
       $regionId = Mage::getModel('directory/region')->loadByCode($state, 'US')->getId();
