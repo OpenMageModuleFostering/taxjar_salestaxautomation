@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<config>
+	<tabs>
+		<salestaxautomation translate="label" module="salestaxautomation">
+			<label>TaxJar</label>
+			<sort_order>99999</sort_order>
+		</salestaxautomation>
+	</tabs>	
+	<sections>
+		<salestaxautomation translate="label" module="salestaxautomation">
+			<label>Sales Tax Automation</label>
+			<tab>salestaxautomation</tab>
+			<frontend_type>text</frontend_type>
+			<sort_order>1000</sort_order>
+			<show_in_default>1</show_in_default>
+			<show_in_website>1</show_in_website>
+			<show_in_store>1</show_in_store>
+			<groups>
+  			<config translate="label">
+  				<label>API Token</label>
+  				<frontend_type>text</frontend_type>
+  				<sort_order>1</sort_order>
+  				<show_in_default>1</show_in_default>
+  				<show_in_website>1</show_in_website>
+  				<show_in_store>1</show_in_store>                
+        	<fields>
+            <salestaxautomation_apikey>
+                <label>API Token</label>
+                <comment>
+                  <model>salestaxautomation/comment</model>
+                </comment>
+                <frontend_type>text</frontend_type>
+                <sort_order>1</sort_order>
+                <show_in_default>1</show_in_default>
+                <show_in_website>1</show_in_website>
+                <show_in_store>1</show_in_store>                    
+            </salestaxautomation_apikey>           
+        	</fields>                 
+  			</config>
+			</groups>
+		</salestaxautomation>
+	</sections>		
+</config>
