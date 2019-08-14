@@ -5,15 +5,15 @@
  * www.taxjar.com
 -->
 <config>    
-	<modules>
-	   <Taxjar_SalesTax><version>1.2.1</version></Taxjar_SalesTax>
+  <modules>
+     <Taxjar_SalesTax><version>1.2.2</version></Taxjar_SalesTax>
   </modules>
-	<global>
-		<helpers>
-			<taxjar>
-				<class>Taxjar_SalesTax_Helper</class>
-			</taxjar>
-		</helpers>
+  <global>
+    <helpers>
+      <taxjar>
+        <class>Taxjar_SalesTax_Helper</class>
+      </taxjar>
+    </helpers>
       <models>
           <taxjar>
               <class>Taxjar_SalesTax_Model</class>
@@ -44,7 +44,7 @@
               </observers>
           </taxjar_salestax_import_rates> 
       </events>      
-	</global>
+  </global>
   <frontend>
       <routers>
           <taxjar>
