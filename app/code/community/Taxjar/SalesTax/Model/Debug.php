@@ -53,7 +53,7 @@ class Taxjar_SalesTax_Model_Debug
         $phpVersion     = @phpversion();
         $magentoVersion = Mage::getVersion();
         $lastUpdated    = Mage::getStoreConfig('tax/taxjar/last_update');
-        
+
         if (!empty($states)) {
             $states = implode(',', $states);
         }

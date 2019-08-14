@@ -23,9 +23,9 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus extends Mage_Adminhtml_Block_Wid
         $this->_controller      = 'adminhtml_tax_nexus';
         $this->_headerText      = Mage::helper('taxjar')->__('Nexus Addresses');
         $this->_addButtonLabel  = Mage::helper('taxjar')->__('Add New Nexus Address');
-        
+
         parent::__construct();
-        
+
         $this->_addButton('sync', array(
             'label'   => Mage::helper('taxjar')->__('Sync from TaxJar'),
             'onclick' => "setLocation('{$this->getUrl('*/tax_nexus/sync')}')",

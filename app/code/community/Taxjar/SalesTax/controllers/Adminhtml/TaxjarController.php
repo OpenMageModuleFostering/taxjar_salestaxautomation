@@ -14,7 +14,7 @@
  * @copyright  Copyright (c) 2016 TaxJar. TaxJar is a trademark of TPS Unlimited, Inc. (http://www.taxjar.com)
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
- 
+
 /**
  * TaxJar Admin Router
  * Connect and disconnect TaxJar accounts
@@ -28,16 +28,16 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
     {
         $apiKey = (string) $this->getRequest()->getParam('api_key');
         $apiEmail = (string) $this->getRequest()->getParam('api_email');
-        
+
         if ($apiKey && $apiEmail) {
             Mage::getConfig()->saveConfig('tax/taxjar/apikey', $apiKey);
             Mage::getConfig()->saveConfig('tax/taxjar/email', $apiEmail);
             Mage::getConfig()->saveConfig('tax/taxjar/connected', 1);
             Mage::getConfig()->reinit();
-            
+
             $configuration = Mage::getModel('taxjar/configuration');
             $configuration->setApiSettings($apiKey);
-            
+
             Mage::getSingleton('core/session')->addSuccess('TaxJar account for ' . $apiEmail . ' is now connected.');
             Mage::dispatchEvent('taxjar_salestax_import_categories');
         } else {
@@ -46,7 +46,7 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
 
         $this->_redirect('adminhtml/system_config/edit/section/tax');
     }
-    
+
     /**
      * Disconnect from TaxJar
      */
@@ -58,15 +58,15 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
         Mage::getConfig()->saveConfig('tax/taxjar/enabled', 0);
         Mage::getConfig()->saveConfig('tax/taxjar/backup', 0);
         Mage::getConfig()->reinit();
-        
+
         $this->_purgeNexusAddresses();
 
         Mage::getSingleton('core/session')->addSuccess('Your TaxJar account has been disconnected.');
         Mage::dispatchEvent('taxjar_salestax_import_rates');
-        
+
         $this->_redirect('adminhtml/system_config/edit/section/tax');
     }
-    
+
     /**
      * Sync backup rates from TaxJar
      */
@@ -80,7 +80,7 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
             Mage::getSingleton('core/session')->addError($e->getMessage());
         }
     }
-    
+
     /**
      * Purge nexus addresses on disconnect
      */
@@ -91,7 +91,7 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
             $nexusAddress->delete();
         }
     }
-    
+
     protected function _isAllowed()
     {
         return Mage::getSingleton('admin/session')->isAllowed('system/config/tax');

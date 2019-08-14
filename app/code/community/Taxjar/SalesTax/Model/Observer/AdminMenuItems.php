@@ -20,13 +20,13 @@ class TaxJar_SalesTax_Model_Observer_AdminMenuItems
     public function execute(Varien_Event_Observer $observer)
     {
         $connected = Mage::getStoreConfig('tax/taxjar/connected');
-        
+
         if (!$connected) {
             $config = Mage::getSingleton('admin/config')->getAdminhtmlConfig()->getNode();
             unset($config->menu->sales->children->tax->children->taxjar_salestax_nexus);
             Mage::getSingleton('admin/config')->getAdminhtmlConfig()->setXml($config);
         }
-        
+
         return $this;
     }
 }

@@ -36,7 +36,7 @@ class Taxjar_SalesTax_Helper_Data extends Mage_Core_Helper_Abstract
         if (function_exists('array_column')) {
             return array_column($input, $columnKey, $indexKey);
         }
-        
+
         // Using func_get_args() in order to check for proper number of
         // parameters and trigger errors exactly as the built-in array_column()
         // does in PHP 5.5.
@@ -106,7 +106,7 @@ class Taxjar_SalesTax_Helper_Data extends Mage_Core_Helper_Abstract
         }
         return $resultArray;
     }
-    
+
     /**
      * Sort a multidimensional array by key
      *

@@ -23,7 +23,7 @@ class Taxjar_SalesTax_Model_Comment
 {
     private $_apiKey;
     private $_apiEmail;
-    
+
     /**
      * Display Nexus states loaded and API Key setting
      *
@@ -41,7 +41,7 @@ class Taxjar_SalesTax_Model_Comment
             return $this->_buildDisconnectedHtml();
         }
     }
-    
+
     /**
      * Build connected HTML
      *
@@ -70,7 +70,7 @@ EOT;
 
         return $htmlString;
     }
-    
+
     /**
      * Build disconnected HTML
      *
@@ -83,7 +83,7 @@ EOT;
         $htmlString .= $this->_buildConnectionHtml();
         return $htmlString;
     }
-    
+
     /**
      * Build HTML for connect/disconnect buttons
      *
@@ -98,13 +98,13 @@ EOT;
         $connectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/connect');
         $connectUrl .= (parse_url($connectUrl, PHP_URL_QUERY) ? '&' : '?');
         $pluginVersion = Mage::getConfig()->getModuleConfig('Taxjar_SalesTax')->version;
-        
+
         if ($this->_getStoreGeneralEmail()) {
             $popupUrl .= '&email=' . urlencode($this->_getStoreGeneralEmail());
         }
-        
+
         $popupUrl .= '&plugin=magento&version=' . $pluginVersion;
-        
+
         $htmlString = <<<EOT
         <br/><p><button type='button' class='scalable' onclick='openConnectPopup("{$popupUrl}", "Connect to TaxJar", 400, 500)'><span>Connect to TaxJar</span></button>&nbsp;&nbsp;<button type='button' class='scalable' onclick='window.open("{$guideUrl}", "_blank")'><span>Learn More</span></button></p>
         <script>
@@ -115,16 +115,16 @@ EOT;
                 var height = window.innerHeight ? window.innerHeight : document.documentElement.clientHeight ? document.documentElement.clientHeight : screen.height;
                 var left = ((width / 2) - (w / 2)) + dualScreenLeft;
                 var top = ((height / 2) - (h / 2)) + dualScreenTop;
-                
+
                 window.connectPopup = window.open(url, title, 'scrollbars=yes, width=' + w + ', height=' + h + ', top=' + top + ', left=' + left);
 
                 if (window.focus) window.connectPopup.focus();
             }
-        
+
             window.addEventListener('message', function(e) {
                 if (e.origin !== '{$authUrl}')
                     return;
-                
+
                 try {
                     var data = JSON.parse(e.data);
                     if (data.api_token && data.email) {
@@ -132,7 +132,7 @@ EOT;
                         window.location = encodeURI('{$connectUrl}api_key=' + data.api_token + '&api_email=' + data.email);
                     } else {
                         throw 'Invalid data';
-                    }                        
+                    }
                 } catch(e) {
                     alert('Invalid API token or email provided. Please try connecting to TaxJar again or contact support@taxjar.com.');
                 }
@@ -142,7 +142,7 @@ EOT;
 
         return $htmlString;
     }
-    
+
     /**
      * Get current store origin
      *
@@ -154,7 +154,7 @@ EOT;
         $protocol = Mage::app()->getRequest()->isSecure() ? 'https://' : 'http://';
         return $protocol . $_SERVER['HTTP_HOST'];
     }
-    
+
     /**
      * Get store general contact email if non-default
      *

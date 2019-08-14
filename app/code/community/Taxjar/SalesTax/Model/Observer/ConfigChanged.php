@@ -22,27 +22,27 @@ class Taxjar_SalesTax_Model_Observer_ConfigChanged
         $this->_updateSmartcalcs();
         $this->_updateBackupRates();
     }
-    
+
     private function _updateSmartcalcs()
     {
-        $enabled = Mage::getStoreConfig('tax/taxjar/enabled'); 
+        $enabled = Mage::getStoreConfig('tax/taxjar/enabled');
         $prevEnabled = Mage::app()->getCache()->load('taxjar_salestax_config_enabled');
 
         if (isset($prevEnabled)) {
-            if($prevEnabled != $enabled && $enabled == 1) {
+            if ($prevEnabled != $enabled && $enabled == 1) {
                 Mage::dispatchEvent('taxjar_salestax_import_categories');
                 Mage::dispatchEvent('taxjar_salestax_import_data');
             }
         }
     }
-    
+
     private function _updateBackupRates()
     {
-        $enabled = Mage::getStoreConfig('tax/taxjar/backup'); 
+        $enabled = Mage::getStoreConfig('tax/taxjar/backup');
         $prevEnabled = Mage::app()->getCache()->load('taxjar_salestax_config_backup');
 
         if (isset($prevEnabled)) {
-            if($prevEnabled != $enabled) {
+            if ($prevEnabled != $enabled) {
                 Mage::dispatchEvent('taxjar_salestax_import_categories');
                 Mage::dispatchEvent('taxjar_salestax_import_data');
                 Mage::dispatchEvent('taxjar_salestax_import_rates');

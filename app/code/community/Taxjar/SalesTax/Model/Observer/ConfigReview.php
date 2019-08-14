@@ -20,24 +20,24 @@ class TaxJar_SalesTax_Model_Observer_ConfigReview
     public function execute(Varien_Event_Observer $observer)
     {
         $configSection = Mage::app()->getRequest()->getParam('section');
-        
+
         if ($configSection == 'tax') {
             $enabled = Mage::getStoreConfig('tax/taxjar/enabled');
-            
+
             if ($enabled) {
                 $this->_reviewNexusAddresses();
             }
         }
-        
+
         return $this;
     }
-    
+
     protected function _reviewNexusAddresses()
     {
         $nexusAddresses = Mage::getModel('taxjar/tax_nexus')->getCollection();
-        
+
         if (!$nexusAddresses->getSize()) {
-            Mage::getSingleton('core/session')->addError(Mage::helper('taxjar')->__('You have no nexus addresses loaded in Magento. Go to Sales > Tax > Nexus Addresses to sync from your TaxJar account or add a new address.'));    
+            Mage::getSingleton('core/session')->addError(Mage::helper('taxjar')->__('You have no nexus addresses loaded in Magento. Go to Sales > Tax > Nexus Addresses to sync from your TaxJar account or add a new address.'));
         }
     }
 }

@@ -25,12 +25,12 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
     protected $_productTaxClasses;
     protected $_newRates = array();
     protected $_newShippingRates = array();
-    
+
     public function execute(Varien_Event_Observer $observer)
     {
         $isEnabled = Mage::getStoreConfig('tax/taxjar/backup');
         $this->_apiKey = trim(Mage::getStoreConfig('tax/taxjar/apikey'));
-        
+
         if ($isEnabled && $this->_apiKey) {
             $this->_client = Mage::getModel('taxjar/client');
             $this->_storeZip = trim(Mage::getStoreConfig('shipping/origin/postcode'));
@@ -40,7 +40,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             $this->_importRates();
         } else {
             $states = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
-            
+
             if (!empty($states)) {
                 $this->_purgeRates();
             }
@@ -49,11 +49,11 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             Mage::getConfig()->saveConfig('taxjar/smartcalcs/backup', 0);
             Mage::getSingleton('core/session')->addNotice('TaxJar has been uninstalled. All tax rates imported by TaxJar have been removed.');
         }
-        
+
         // Clear the cache to avoid UI elements not loading
         Mage::app()->getCacheInstance()->flush();
     }
-    
+
     /**
      * Import tax rates from TaxJar
      *
@@ -74,7 +74,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
         } else {
             Mage::throwException('Please check that your zip code is a valid US zip code in Shipping Settings.');
         }
-        
+
         if (!count($this->_productTaxClasses) || !count($this->_customerTaxClasses)) {
             Mage::throwException('Please select at least one product tax class and one customer tax class to import backup rates from TaxJar.');
         }
@@ -86,7 +86,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             // This process can take awhile
             @set_time_limit(0);
             @ignore_user_abort(true);
-            
+
             $filename = $this->_getTempRatesFileName();
             $ratesJson = unserialize(file_get_contents($filename));
 
@@ -103,7 +103,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             Mage::throwException('Could not write to your Magento temp directory. Please check permissions for ' . Mage::getBaseDir('tmp') . '.');
         }
     }
-    
+
     /**
      * Create new tax rates
      *
@@ -126,7 +126,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             }
         }
     }
-    
+
     /**
      * Create or update existing tax rules with new rates
      *
@@ -139,18 +139,18 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
         $productTaxClasses = $this->_productTaxClasses;
         $shippingClass = Mage::getStoreConfig('tax/classes/shipping_tax_class');
         $backupShipping = in_array($shippingClass, $productTaxClasses);
-        
+
         if ($backupShipping) {
             $productTaxClasses = array_diff($productTaxClasses, array($shippingClass));
         }
 
         $rule->create('TaxJar Backup Rates', $this->_customerTaxClasses, $productTaxClasses, 1, $this->_newRates);
-        
+
         if ($backupShipping) {
-            $rule->create('TaxJar Backup Rates (Shipping)', $this->_customerTaxClasses, array($shippingClass), 2, $this->_newShippingRates);    
+            $rule->create('TaxJar Backup Rates (Shipping)', $this->_customerTaxClasses, array($shippingClass), 2, $this->_newShippingRates);
         }
     }
-    
+
     /**
      * Purge existing rule calculations and rates
      *
@@ -163,7 +163,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
 
         foreach ($rates as $rate) {
             $calculations = Mage::getModel('taxjar/import_rate')->getCalculationsByRateId($rate->getId())->load();
-            
+
             try {
                 foreach ($calculations as $calculation) {
                     $calculation->delete();
@@ -179,7 +179,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             }
         }
     }
-    
+
     /**
      * Get TaxJar backup rates
      *
@@ -204,7 +204,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
     {
         return Mage::getBaseDir('tmp') . DS . 'tj_tmp.dat';
     }
-    
+
     /**
      * Set the last updated date
      *

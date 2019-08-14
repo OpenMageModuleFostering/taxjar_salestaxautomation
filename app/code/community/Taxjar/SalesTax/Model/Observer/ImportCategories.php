@@ -19,17 +19,17 @@ class Taxjar_SalesTax_Model_Observer_ImportCategories
 {
     protected $_apiKey;
     protected $_client;
-    
+
     public function execute(Varien_Event_Observer $observer)
     {
         $this->_apiKey = trim(Mage::getStoreConfig('tax/taxjar/apikey'));
-        
+
         if ($this->_apiKey) {
             $this->_client = Mage::getModel('taxjar/client');
             $this->_importCategories();
         }
     }
-    
+
     /**
      * Get TaxJar product categories
      *
@@ -41,7 +41,7 @@ class Taxjar_SalesTax_Model_Observer_ImportCategories
         $categoryJson = $this->_client->getResource($this->_apiKey, 'categories');
         return $categoryJson['categories'];
     }
-    
+
     /**
      * Import TaxJar product categories
      *

@@ -18,7 +18,7 @@
 /**
  * Calculation Model
  * TaxJar Zip+4 Rate Calculation Support for US
- */
+*/
 class Taxjar_SalesTax_Model_Calculation extends Mage_Tax_Model_Resource_Calculation
 {
     /**

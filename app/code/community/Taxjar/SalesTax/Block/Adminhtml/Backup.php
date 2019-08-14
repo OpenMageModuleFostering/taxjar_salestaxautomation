@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * Taxjar_SalesTax
  *
@@ -24,14 +24,14 @@ class Taxjar_SalesTax_Block_Adminhtml_Backup extends Mage_Adminhtml_Block_System
     protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $apiKey = trim(Mage::getStoreConfig('tax/taxjar/apikey'));
-        
+
         if ($apiKey) {
             $this->_cacheElementValue($element);
         }
 
         return parent::_getElementHtml($element);
     }
-    
+
     protected function _cacheElementValue(Varien_Data_Form_Element_Abstract $element)
     {
         $elementValue = (string) $element->getValue();

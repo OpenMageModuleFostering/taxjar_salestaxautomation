@@ -44,7 +44,7 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
             $store = $address->getQuote()->getStore();
             $items = $this->_getAddressItems($address);
             $rates = $smartCalcsResponse['body']['tax'];
-            
+
             if (isset($rates['breakdown']['shipping']['tax_collectable'])) {
                 $shippingTaxAmount = $rates['breakdown']['shipping']['tax_collectable'];
             } else {
@@ -56,11 +56,11 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
 
             $address->setShippingTaxAmount($store->convertPrice($shippingTaxAmount));
             $address->setBaseShippingTaxAmount($shippingTaxAmount);
-            
+
             if (count($items) > 0) {
                 foreach ($items as $item) {
                     $itemTax = $smartCalcs->getResponseLineItem($item->getId());
-                    
+
                     if (isset($itemTax)) {
                         $this->_addAmount($store->convertPrice($itemTax['tax_collectable']));
                         $this->_addBaseAmount($itemTax['tax_collectable']);
@@ -68,7 +68,7 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
                         $item->setTaxAmount($store->convertPrice($itemTax['tax_collectable']));
                         $item->setBaseTaxAmount($itemTax['tax_collectable']);
                     }
-                }    
+                }
             }
         } else {
             return parent::collect($address);

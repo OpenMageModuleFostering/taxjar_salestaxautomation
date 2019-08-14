@@ -19,7 +19,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Grid extends Mage_Adminhtml_Bloc
 {
     protected function _prepareColumns()
     {
-        parent::_prepareColumns();   
+        parent::_prepareColumns();
 
         $connected = Mage::getStoreConfig('tax/taxjar/connected');
 
@@ -34,7 +34,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Grid extends Mage_Adminhtml_Bloc
                 )
             );
         }
-        
+
         if ($connected && $this->getClassType() == 'CUSTOMER') {
             $this->addColumn(
                 'tj_salestax_code', array(

@@ -33,10 +33,10 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
             'action'    => $this->getData('action'),
             'method'    => 'post'
         ));
-        
+
         $countries = Mage::getModel('adminhtml/system_config_source_country')->toOptionArray();
         unset($countries[0]);
-        
+
         if (!$model->hasCountryId()) {
             $model->setCountryId(Mage::getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_DEFAULT_COUNTRY));
         }
@@ -44,7 +44,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
         if (!$model->hasRegionId()) {
             $model->setRegionId(Mage::getStoreConfig(Mage_Tax_Model_Config::CONFIG_XML_PATH_DEFAULT_REGION));
         }
-        
+
         $regionCollection = Mage::getModel('directory/region')->getCollection()->addCountryFilter($model->getCountryId());
         $regions = $regionCollection->toOptionArray();
 
@@ -53,7 +53,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
         $fieldset = $form->addFieldset('base_fieldset', array(
             'legend'    => 'Nexus Address Information'
         ));
-        
+
         if ($model->getId() > 0) {
             $fieldset->addField('id', 'hidden', array(
                 'name'  => 'id',
@@ -64,7 +64,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
                 'name'  => 'api_id',
                 'value' => $model->getApiId()
             ));
-            
+
             $fieldset->addField('region', 'hidden', array(
                 'name'  => 'region',
                 'value' => $model->getRegion()
@@ -80,7 +80,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
                 'required' => true
             )
         );
-        
+
         $fieldset->addField('city', 'text',
             array(
                 'name'     => 'city',
@@ -90,7 +90,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
                 'required' => true
             )
         );
-        
+
         $fieldset->addField('country_id', 'select',
             array(
                 'name'               => 'country_id',
@@ -109,7 +109,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
                 'values'   => $regions
             )
         );
-        
+
         $fieldset->addField('postcode', 'text',
             array(
                 'name'     => 'postcode',
@@ -123,7 +123,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
         $form->setAction($this->getUrl('*/tax_nexus/save'));
         $form->setUseContainer(true);
         $form->setMethod('post');
-        
+
         $nexusData = $model->getData();
         $form->setValues($nexusData);
         $this->setForm($form);

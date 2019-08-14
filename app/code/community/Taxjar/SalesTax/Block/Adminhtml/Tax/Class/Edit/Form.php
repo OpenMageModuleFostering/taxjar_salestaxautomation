@@ -24,7 +24,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Edit_Form extends Mage_Adminhtml
         $connected = Mage::getStoreConfig('tax/taxjar/connected');
         $fieldset = $this->getForm()->getElement('base_fieldset');
         $currentClass = Mage::registry('tax_class');
-        
+
         if ($connected && $this->getClassType() == 'PRODUCT') {
             $fieldset->addField(
                 'tj_salestax_code', 'select', array(
@@ -33,9 +33,9 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Edit_Form extends Mage_Adminhtml
                     'value' => $currentClass->getTjSalestaxCode(),
                     'values' => Mage::getModel('taxjar/categories')->toOptionArray()
                 )
-            );    
+            );
         }
-        
+
         if ($connected && $this->getClassType() == 'CUSTOMER') {
             $fieldset->addField(
                 'tj_salestax_code', 'select', array(
@@ -47,7 +47,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Edit_Form extends Mage_Adminhtml
                         '' => 'No'
                     )
                 )
-            );    
+            );
         }
 
         return $this;

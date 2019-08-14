@@ -19,15 +19,15 @@ class Taxjar_SalesTax_Model_Observer_ImportData
 {
     protected $_apiKey;
     protected $_client;
-    
+
     public function execute(Varien_Event_Observer $observer)
     {
         $this->_apiKey = trim(Mage::getStoreConfig('tax/taxjar/apikey'));
         $storeRegionCode = Mage::getModel('directory/region')->load(Mage::getStoreConfig('shipping/origin/region_id'))->getCode();
-        
+
         if ($this->_apiKey) {
             $this->_client = Mage::getModel('taxjar/client');
-            
+
             if (isset($storeRegionCode)) {
                 $this->_setConfiguration();
             } else {
@@ -35,7 +35,7 @@ class Taxjar_SalesTax_Model_Observer_ImportData
             }
         }
     }
-    
+
     /**
      * Get TaxJar user account configuration
      *
@@ -47,7 +47,7 @@ class Taxjar_SalesTax_Model_Observer_ImportData
         $configJson = $this->_client->getResource($this->_apiKey, 'config');
         return $configJson['configuration'];
     }
-    
+
     /**
      * Set TaxJar config
      *

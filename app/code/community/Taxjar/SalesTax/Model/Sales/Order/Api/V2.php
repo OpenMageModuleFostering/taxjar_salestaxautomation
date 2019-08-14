@@ -31,12 +31,12 @@ class Taxjar_SalesTax_Model_Sales_Order_Api_V2 extends Mage_Sales_Model_Order_Ap
     {
         $result = parent::info($orderIncrementId);
         $order = parent::_initOrder($orderIncrementId);
-        
+
         foreach ($order->getAllItems() as $itemIndex => $item) {
             $taxClass = Mage::getModel('tax/class')->load($item->getProduct()->getTaxClassId());
             $result['items'][$itemIndex]['product_tax_code'] = $taxClass->getTjSalestaxCode();
         }
-        
+
         return $result;
     }
 }

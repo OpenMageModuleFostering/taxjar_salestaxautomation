@@ -77,7 +77,7 @@ class Taxjar_SalesTax_Model_Import_Rate
             return;
         }
     }
-  
+
     /**
      * Get existing TaxJar rates based on configuration states
      *
@@ -90,7 +90,7 @@ class Taxjar_SalesTax_Model_Import_Rate
             ->getCollection()
             ->addFieldToFilter('tax_region_id', $this->getRegionFilter());
     }
-    
+
     /**
      * Get existing TaxJar rule calculations based on the rate ID
      *

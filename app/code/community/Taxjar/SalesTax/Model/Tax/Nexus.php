@@ -21,7 +21,7 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
     {
         $this->_init('taxjar/tax_nexus');
     }
-    
+
     /**
      * Create or update nexus address in TaxJar
      *
@@ -39,14 +39,14 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
             'zip' => $this->getPostcode(),
             'country' => $this->getCountryId()
         );
-        
+
         $responseErrors = array(
             '400' => Mage::helper('taxjar')->__('Your nexus address contains invalid data. Please verify the address in order to sync with TaxJar.'),
             '409' => Mage::helper('taxjar')->__('A nexus address already exists for this state/region. TaxJar currently supports one address per region.'),
             '422' => Mage::helper('taxjar')->__('Your nexus address is missing one or more required fields. Please verify the address in order to sync with TaxJar.'),
             '500' => Mage::helper('taxjar')->__('Something went wrong while syncing your address with TaxJar. Please verify the address and contact support@taxjar.com if the problem persists.')
         );
-        
+
         if ($this->getId()) {
             $client->putResource($apiKey, 'nexus', $this->getApiId(), $data, $responseErrors);
         } else {
@@ -55,7 +55,7 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
             $this->save();
         }
     }
-    
+
     /**
      * Delete nexus address in TaxJar
      *
@@ -65,7 +65,7 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
     {
         $client = Mage::getModel('taxjar/client');
         $apiKey = trim(Mage::getStoreConfig('tax/taxjar/apikey'));
-        
+
         $responseErrors = array(
             '409' => Mage::helper('taxjar')->__('A nexus address with this ID could not be found in TaxJar.'),
             '500' => Mage::helper('taxjar')->__('Something went wrong while deleting your address in TaxJar. Please contact support@taxjar.com if the problem persists.')
@@ -75,7 +75,7 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
             $client->deleteResource($apiKey, 'nexus', $this->getApiId(), $responseErrors);
         }
     }
-    
+
     /**
      * Sync nexus addresses from TaxJar -> Magento
      *
@@ -94,14 +94,14 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
                 $addressRegion = Mage::getModel('directory/region')->loadByCode($address['state'], $address['country']);
                 $addressCountry = Mage::getModel('directory/country')->loadByCode($address['country']);
                 $addressCollection = Mage::getModel('taxjar/tax_nexus')->getCollection();
-                
+
                 // Find existing address by region if US, otherwise country
                 if ($address['country'] == 'US') {
                     $existingAddress = $addressCollection->addFieldToFilter('region_id', $addressRegion->getId())->getFirstItem();
                 } else {
                     $existingAddress = $addressCollection->addFieldToFilter('country_id', $addressCountry->getId())->getFirstItem();
                 }
-                
+
                 if ($existingAddress->getId()) {
                     $existingAddress->addData(array(
                         'api_id'     => $address['id'],
@@ -130,7 +130,7 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
             }
         }
     }
-    
+
     /**
      * Validate nexus address
      *
@@ -140,11 +140,11 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
     {
         $errors = array();
         $nexusModel = Mage::getModel('taxjar/tax_nexus');
-        
+
         if (!Zend_Validate::is($this->getStreet(), 'NotEmpty')) {
             $errors[] = Mage::helper('taxjar')->__('Street address can\'t be empty');
         }
-        
+
         if (!Zend_Validate::is($this->getCity(), 'NotEmpty')) {
             $errors[] = Mage::helper('taxjar')->__('City can\'t be empty');
         }
@@ -152,11 +152,11 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
         if (!Zend_Validate::is($this->getCountryId(), 'NotEmpty')) {
             $errors[] = Mage::helper('taxjar')->__('Country can\'t be empty');
         }
-        
+
         if (!Zend_Validate::is($this->getPostcode(), 'NotEmpty')) {
             $errors[] = Mage::helper('taxjar')->__('Zip/Post Code can\'t be empty');
         }
-        
+
         if (!$this->getId()) {
             $countryAddresses = $nexusModel->getCollection()->addFieldToFilter('country_id', $this->getCountryId());
 

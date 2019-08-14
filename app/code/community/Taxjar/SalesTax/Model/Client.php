@@ -31,7 +31,7 @@ class Taxjar_SalesTax_Model_Client
         $this->_storeZip = trim(Mage::getStoreConfig('shipping/origin/postcode'));
         $this->_storeRegionCode = Mage::getModel('directory/region')->load(Mage::getStoreConfig('shipping/origin/region_id'))->getCode();
     }
-    
+
     /**
      * Perform a GET request
      *
@@ -61,7 +61,7 @@ class Taxjar_SalesTax_Model_Client
         $client->setRawData(json_encode($data), 'application/json');
         return $this->_getRequest($client, $errors);
     }
-    
+
     /**
      * Perform a PUT request
      *
@@ -78,7 +78,7 @@ class Taxjar_SalesTax_Model_Client
         $client->setRawData(json_encode($data), 'application/json');
         return $this->_getRequest($client, $errors);
     }
-    
+
     /**
      * Perform a DELETE request
      *
@@ -109,7 +109,7 @@ class Taxjar_SalesTax_Model_Client
 
         return $client;
     }
-    
+
     /**
      * Get HTTP request
      *
@@ -121,7 +121,7 @@ class Taxjar_SalesTax_Model_Client
     {
         try {
             $response = $client->request();
-            
+
             if ($response->isSuccessful()) {
                 $json = $response->getBody();
                 return json_decode($json, true);
@@ -132,7 +132,7 @@ class Taxjar_SalesTax_Model_Client
             Mage::throwException(Mage::helper('taxjar')->__('Could not connect to TaxJar.'));
         }
     }
-    
+
     /**
      * Get SmartCalcs API URL
      *
@@ -157,10 +157,10 @@ class Taxjar_SalesTax_Model_Client
                 $apiUrl .= '/nexus/addresses';
                 break;
         }
-        
+
         return $apiUrl;
     }
-    
+
     /**
      * Handle API errors and throw exception
      *
@@ -171,14 +171,14 @@ class Taxjar_SalesTax_Model_Client
     private function _handleError($customErrors, $statusCode)
     {
         $errors = $this->_defaultErrors() + $customErrors;
-        
+
         if ($errors[$statusCode]) {
             Mage::throwException($errors[$statusCode]);
         } else {
             Mage::throwException($errors['default']);
         }
     }
-    
+
     /**
      * Return default API errors
      *

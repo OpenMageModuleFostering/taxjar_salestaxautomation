@@ -22,7 +22,7 @@
 class Taxjar_SalesTax_Model_Import_Comment
 {
     protected $_regionCode;
-    
+
     /**
      * Display Nexus states loaded and API Key setting
      *
@@ -31,7 +31,7 @@ class Taxjar_SalesTax_Model_Import_Comment
      */
     public function getCommentText()
     {
-        $isEnabled = Mage::getStoreConfig('tax/taxjar/backup'); 
+        $isEnabled = Mage::getStoreConfig('tax/taxjar/backup');
         $regionId = Mage::getStoreConfig('shipping/origin/region_id');
         $this->_regionCode = Mage::getModel('directory/region')->load($regionId)->getCode();
 
@@ -61,7 +61,7 @@ class Taxjar_SalesTax_Model_Import_Comment
         }
 
         $rateCalcs = array(
-            'total_rates' => array_sum($ratesByState), 
+            'total_rates' => array_sum($ratesByState),
             'rates_loaded' => Mage::getModel('taxjar/import_rate')->getExistingRates()->getSize(),
             'rates_by_state' => $ratesByState
         );
@@ -90,11 +90,11 @@ class Taxjar_SalesTax_Model_Import_Comment
     {
         $states = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
         $htmlString = "<p class='note'><span>Download zip-based rates from TaxJar as a fallback. TaxJar uses your shipping origin and nexus addresses to sync rates rach month.</span></p><br/>";
-        
+
         if (!empty($states)) {
             $htmlString .= "<ul class='messages'>" . $this->buildStatesHtml($states) . "</ul>";
         }
-        
+
         $htmlString .= $this->buildSyncHtml();
 
         return $htmlString;
@@ -142,7 +142,7 @@ class Taxjar_SalesTax_Model_Import_Comment
                     $totalForState = $taxRatesByState['rates_by_state'][$state] . ' rates';
                 }
 
-                $statesHtml .= '<li class="' . $class . '-msg"><ul><li style="line-height: 1.9em"><span style="font-size: 1.4em">' . $stateName . '</span>: ' . $totalForState . '</li></ul></li>'; 
+                $statesHtml .= '<li class="' . $class . '-msg"><ul><li style="line-height: 1.9em"><span style="font-size: 1.4em">' . $stateName . '</span>: ' . $totalForState . '</li></ul></li>';
             }
         }
 
@@ -155,7 +155,7 @@ class Taxjar_SalesTax_Model_Import_Comment
         $statesHtml .= '<p class="' . $matches . '-msg" style="background: none !important;"><small>&nbsp;&nbsp;' . $taxRatesByState['total_rates'] . ' of ' . $taxRatesByState['rates_loaded'] . ' expected rates loaded.</small></p>';
         $statesHtml .= '<p class="' . $matches . '-msg" style="background: none !important;"><small>&nbsp;&nbsp;' . 'Last synced on ' . $lastUpdate . '</small></p><br/>';
 
-        return $statesHtml;   
+        return $statesHtml;
     }
 
     /**
@@ -176,7 +176,7 @@ class Taxjar_SalesTax_Model_Import_Comment
                     onCreate: function(request) {
                         varienLoaderHandler.handler.onCreate({options: {loaderArea: true}});
                     },
-                    onComplete: function(data) { 
+                    onComplete: function(data) {
                         varienLoaderHandler.handler.onComplete();
                         window.location = '{$redirectUrl}';
                     }

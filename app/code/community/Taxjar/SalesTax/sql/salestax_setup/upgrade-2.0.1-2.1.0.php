@@ -56,7 +56,7 @@ try {
         ->addIndex($installer->getIdxName('taxjar/tax_nexus', array('region_code')),
             array('region_code'))
         ->setComment('TaxJar Nexus Address');
-        
+
     $installer->getConnection()->createTable($table);
 
 } catch (Exception $e) {

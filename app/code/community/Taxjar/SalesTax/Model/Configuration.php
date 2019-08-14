@@ -64,8 +64,8 @@ class Taxjar_SalesTax_Model_Configuration
     public function setDisplaySettings()
     {
         $settings = array(
-            'tax/display/type', 
-            'tax/display/shipping', 
+            'tax/display/type',
+            'tax/display/shipping',
             'tax/cart_display/price',
             'tax/cart_display/subtotal',
             'tax/cart_display/shipping'
@@ -164,7 +164,7 @@ class Taxjar_SalesTax_Model_Configuration
         $apiUser->setIsActive(1);
         $apiUser->save();
 
-        return $apiUser->getUserId(); 
+        return $apiUser->getUserId();
     }
 
     /**

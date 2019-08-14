@@ -14,7 +14,7 @@
  * @copyright  Copyright (c) 2016 TaxJar. TaxJar is a trademark of TPS Unlimited, Inc. (http://www.taxjar.com)
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
- 
+
 /**
  * TaxJar Admin Router
  * Connect and disconnect TaxJar accounts
@@ -33,24 +33,24 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
             ->_addContent($this->getLayout()->createBlock('taxjar/adminhtml_tax_nexus'))
             ->renderLayout();
     }
-    
+
     public function syncAction()
     {
         try {
             Mage::getModel('taxjar/tax_nexus')->syncCollection();
-            Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('taxjar')->__('Your nexus addresses have been synced from TaxJar.'));            
+            Mage::getSingleton('adminhtml/session')->addSuccess(Mage::helper('taxjar')->__('Your nexus addresses have been synced from TaxJar.'));
         } catch (Mage_Core_Exception $e) {
             Mage::getSingleton('adminhtml/session')->addError($e->getMessage());
         }
 
         $this->_redirect('*/*/');
     }
-    
+
     public function newAction()
     {
         $this->_forward('edit');
     }
-    
+
     public function editAction()
     {
         $this->_title($this->__('Sales'))
@@ -91,7 +91,7 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
             )
             ->renderLayout();
     }
-    
+
     public function saveAction()
     {
         $nexusPost = $this->getRequest()->getPost();
@@ -109,7 +109,7 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
 
             $nexusModel = Mage::getModel('taxjar/tax_nexus')->setData($nexusPost);
             $regionModel = Mage::getModel('directory/region')->load($nexusModel->getRegionId());
-            
+
             $nexusModel->setRegion($regionModel->getName());
             $nexusModel->setRegionCode($regionModel->getCode());
 
@@ -120,7 +120,7 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
                     $this->_redirectReferer();
                     return;
                 }
-                
+
                 try {
                     if ($nexusModel->getCountryId() == 'US') {
                         $nexusModel->sync();
@@ -146,7 +146,7 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
 
         $this->getResponse()->setRedirect($this->getUrl('*/tax_nexus'));
     }
-    
+
     public function deleteAction()
     {
         if ($nexusId = $this->getRequest()->getParam('id')) {
@@ -180,7 +180,7 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
             }
         }
     }
-    
+
     protected function _initAction()
     {
         $this->loadLayout()
@@ -188,24 +188,24 @@ class Taxjar_SalesTax_Adminhtml_Tax_NexusController extends Mage_Adminhtml_Contr
             ->_addBreadcrumb(Mage::helper('taxjar')->__('Tax'), Mage::helper('taxjar')->__('Tax'))
             ->_addBreadcrumb(Mage::helper('taxjar')->__('Nexus Addresses'), Mage::helper('taxjar')->__('Nexus Addresses'))
         ;
-        return $this;    
+        return $this;
     }
-    
+
     protected function _isAllowed()
     {
         $connected = Mage::getStoreConfig('tax/taxjar/connected');
-        
+
         if (!$connected) {
             return false;
         }
-        
+
         return Mage::getSingleton('admin/session')->isAllowed('sales/tax/taxjar_salestax_nexus');
     }
-    
+
     protected function _reviewAddresses()
     {
         $nexusMissingPostcode = Mage::getModel('taxjar/tax_nexus')->getCollection()->addFieldToFilter('postcode', array('null' => true));
-        
+
         if ($nexusMissingPostcode->getSize()) {
             return Mage::getSingleton('core/session')->addNotice(Mage::helper('taxjar')->__('One or more of your nexus addresses are missing a zip/post code. Please provide accurate data for each nexus address.'));
         }

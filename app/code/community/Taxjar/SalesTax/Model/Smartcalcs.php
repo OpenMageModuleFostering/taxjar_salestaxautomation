@@ -54,7 +54,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
         if (!count($address->getAllItems())) {
             return;
         }
-        
+
         if ($this->_isCustomerExempt($address)) {
             return;
         }
@@ -86,7 +86,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
             $client = new Zend_Http_Client('https://api.taxjar.com/v2/magento/taxes');
             $client->setHeaders('Authorization', 'Bearer ' . $apiKey);
             $client->setRawData(json_encode($order), 'application/json');
-            
+
             $this->_setSessionData('order', json_encode($order));
 
             try {
@@ -100,7 +100,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
             }
         } else {
             $sessionResponse = $this->_getSessionData('response');
-            
+
             if (isset($sessionResponse)) {
                 $this->_response = $sessionResponse;
             }
@@ -127,7 +127,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
             );
         }
     }
-    
+
     /**
      * Get a specific line item breakdown from a SmartCalcs API response
      * Also builds a combined rate based on returned sales tax rates
@@ -135,14 +135,14 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @return array
      */
     public function getResponseLineItem($id)
-    {        
+    {
         if ($this->_response) {
             $responseBody = json_decode($this->_response->getBody(), true);
 
             if (isset($responseBody['tax']['breakdown']['line_items'])) {
                 $lineItems = $responseBody['tax']['breakdown']['line_items'];
                 $matchedKey = array_search($id, Mage::helper('taxjar')->array_column($lineItems, 'id'));
-                
+
                 if (isset($lineItems[$matchedKey]) && $matchedKey !== false) {
                     return $lineItems[$matchedKey];
                 }
@@ -160,24 +160,24 @@ class Taxjar_SalesTax_Model_Smartcalcs
     private function _hasNexus($regionCode, $country)
     {
         $nexusCollection = Mage::getModel('taxjar/tax_nexus')->getCollection();
-        
+
         if ($country == 'US') {
             $nexusInRegion = $nexusCollection->addFieldToFilter('region_code', $regionCode);
-            
+
             if ($nexusInRegion->getSize()) {
                 return true;
             }
         } else {
             $nexusInCountry = $nexusCollection->addFieldToFilter('country_id', $country);
-            
+
             if ($nexusInCountry->getSize()) {
                 return true;
             }
         }
-        
+
         return false;
     }
-    
+
     /**
      * Verify if customer is exempt from sales tax
      *
@@ -188,11 +188,11 @@ class Taxjar_SalesTax_Model_Smartcalcs
     {
         $customerTaxClass = Mage::getModel('tax/class')->load($address->getQuote()->getCustomerTaxClassId());
         $customerTaxCode = $customerTaxClass->getTjSalestaxCode();
-        
+
         if ($customerTaxCode == '99999') {
             return true;
         }
-        
+
         return false;
     }
 
@@ -208,8 +208,11 @@ class Taxjar_SalesTax_Model_Smartcalcs
         $items = $address->getAllItems();
 
         if (count($items) > 0) {
+            $parentQuantities = array();
+
             foreach ($items as $item) {
                 $id = $item->getId();
+                $parentId = $item->getParentItemId();
                 $quantity = $item->getQty();
                 $taxClass = Mage::getModel('tax/class')->load($item->getProduct()->getTaxClassId());
                 $taxCode = $taxClass->getTjSalestaxCode();
@@ -217,7 +220,12 @@ class Taxjar_SalesTax_Model_Smartcalcs
                 $discount = (float) $item->getDiscountAmount();
 
                 if ($item->getProductType() == Mage_Catalog_Model_Product_Type::TYPE_BUNDLE) {
+                    $parentQuantities[$id] = $quantity;
                     continue;
+                }
+
+                if ($parentId) {
+                    $quantity *= $parentQuantities[$parentId];
                 }
 
                 if (Mage::getEdition() == 'Enterprise') {
@@ -225,7 +233,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
                         $giftTaxClassId = Mage::getStoreConfig('tax/classes/wrapping_tax_class');
                         $giftTaxClass = Mage::getModel('tax/class')->load($giftTaxClassId);
                         $giftTaxClassCode = $giftTaxClass->getTjSalestaxCode();
-                        
+
                         if ($giftTaxClassCode) {
                             $taxCode = $giftTaxClassCode;
                         } else {
@@ -241,14 +249,14 @@ class Taxjar_SalesTax_Model_Smartcalcs
                         'product_tax_code' => $taxCode,
                         'unit_price' => $unitPrice,
                         'discount' => $discount,
-                    ));    
+                    ));
                 }
             }
         }
 
         return $lineItems;
     }
-    
+
     /**
      * Get nexus addresses for `nexus_addresses` param
      *
@@ -258,7 +266,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
     {
         $nexusAddresses = Mage::getModel('taxjar/tax_nexus')->getCollection();
         $addresses = array();
-        
+
         foreach($nexusAddresses as $nexusAddress) {
             $addresses[] = array(
                 'id' => $nexusAddress->getId(),
@@ -269,7 +277,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
                 'street' => $nexusAddress->getStreet()
             );
         }
-        
+
         return $addresses;
     }
 
@@ -289,7 +297,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
             return true;
         }
     }
-    
+
     /**
      * Get prefixed session data from checkout/session
      *
@@ -300,7 +308,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
     {
         return Mage::getModel('checkout/session')->getData('taxjar_salestax_' . $key);
     }
-    
+
     /**
      * Set prefixed session data in checkout/session
      *
@@ -312,7 +320,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
     {
         return Mage::getModel('checkout/session')->setData('taxjar_salestax_' . $key, $val);
     }
-    
+
     /**
      * Unset prefixed session data in checkout/session
      *
