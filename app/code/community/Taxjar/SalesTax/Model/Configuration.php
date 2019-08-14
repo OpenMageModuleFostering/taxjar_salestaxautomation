@@ -1,22 +1,22 @@
 <?php
-
 /**
  * TaxJar configuration setter
  *
  * @author Taxjar (support@taxjar.com)
  */
-class Taxjar_SalesTax_Model_Configuration {
-
+class Taxjar_SalesTax_Model_Configuration
+{
   /**
    * Sets shipping taxability in Magento
    *
    * @param JSON $string
    * @return void
    */
-  public function setShippingTaxability( $configJson ) {
+  public function setShippingTaxability($configJson)
+  {
     $taxClass = 0;
 
-    if( $configJson['freight_taxable'] ) {
+    if ($configJson['freight_taxable']) {
       $taxClass = 4;
     }
 
@@ -29,10 +29,11 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param JSON $string
    * @return void
    */
-  public function setTaxBasis( $configJson ) {
+  public function setTaxBasis($configJson)
+  {
     $basis = 'shipping';
 
-    if( $configJson['tax_source'] === 'origin' ) {
+    if ($configJson['tax_source'] === 'origin') {
       $basis = 'origin';
     }
 
@@ -45,7 +46,8 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param void
    * @return void
    */
-  public function setDisplaySettings() {
+  public function setDisplaySettings()
+  {
     $settings = array(
       'tax/display/type', 
       'tax/display/shipping', 
@@ -54,10 +56,9 @@ class Taxjar_SalesTax_Model_Configuration {
       'tax/cart_display/shipping'
     );
 
-    foreach( $settings as $setting ) {
+    foreach ($settings as $setting) {
       $this->setConfig($setting, 1);
     }
-
   }
 
   /**
@@ -66,16 +67,16 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param $string
    * @return void
    */
-  public function setApiSettings( $apiKey ) {
-    $apiUser        = Mage::getModel('api/user');
+  public function setApiSettings($apiKey)
+  {
+    $apiUser = Mage::getModel('api/user');
     $existingUserId = $apiUser->load('taxjar', 'username')->getUserId();
 
-    if( !$existingUserId ) {
+    if (!$existingUserId) {
       $apiUserId = $this->createApiUser($apiKey);
       $parentRoleId = $this->createApiRoles($apiUserId);
       $this->createApiRules($parentRoleId);
     }
-
   }
 
   /**
@@ -84,9 +85,9 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param void
    * @return void
    */
-  private function createApiRules( $parentRoleId ) {
-
-    foreach( $this->resourcesToAllow() as $resource ) {
+  private function createApiRules($parentRoleId)
+  {
+    foreach ($this->resourcesToAllow() as $resource) {
       $apiRule = Mage::getModel('api/rules');
       $apiRule->setRoleId($parentRoleId);
       $apiRule->setResourceId($resource);
@@ -95,7 +96,7 @@ class Taxjar_SalesTax_Model_Configuration {
       $apiRule->save();
     }
 
-    foreach( $this->resourcesToDeny() as $resource ) {
+    foreach ($this->resourcesToDeny() as $resource) {
       $apiRule = Mage::getModel('api/rules');
       $apiRule->setRoleId($parentRoleId);
       $apiRule->setResourceId($resource);
@@ -103,7 +104,6 @@ class Taxjar_SalesTax_Model_Configuration {
       $apiRule->setApiPermission('deny');
       $apiRule->save();
     }
-
   }
 
   /**
@@ -112,7 +112,8 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param $integer
    * @return $integer
    */
-  private function createApiRoles( $apiUserId ) {
+  private function createApiRoles($apiUserId)
+  {
     $parentApiRole = Mage::getModel('api/role');
     $parentApiRole->setRoleName('taxjar_api');
     $parentApiRole->setTreeLevel(1);
@@ -137,7 +138,8 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param void
    * @return void
    */
-  private function createApiUser( $apiKey ) {
+  private function createApiUser($apiKey)
+  {
     $apiUser = Mage::getModel('api/user');
     $apiUser->setUsername('taxjar');
     $apiUser->setFirstname('TaxJar');
@@ -156,9 +158,9 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param $string, $mixed
    * @return void
    */
-  private function setConfig( $path, $value ) {
-    $config = new Mage_Core_Model_Config();
-    $config->saveConfig($path, $value, 'default', 0);
+  private function setConfig($path, $value)
+  {
+    Mage::getConfig()->saveConfig($path, $value, 'default', 0);
   }
 
   /**
@@ -167,7 +169,8 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param void
    * @return $array
    */
-  private function resourcesToAllow() {
+  private function resourcesToAllow()
+  {
     return array(
       'sales',
       'sales/order',
@@ -201,7 +204,8 @@ class Taxjar_SalesTax_Model_Configuration {
    * @param void
    * @return $array
    */
-  private function resourcesToDeny() {
+  private function resourcesToDeny()
+  {
     return array(
       'core',
       'core/store',
@@ -326,6 +330,4 @@ class Taxjar_SalesTax_Model_Configuration {
       'all'
     );
   }
-
 }
-

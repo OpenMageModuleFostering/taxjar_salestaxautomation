@@ -1,15 +1,15 @@
 <?php
-
 /**
  * Create and parse rates from JSON obj
  *
  * @author Taxjar (support@taxjar.com)
  */
-class Taxjar_SalesTax_Model_Rate {
-
+class Taxjar_SalesTax_Model_Rate
+{
   private $cache;
   
-  public function __construct() {
+  public function __construct()
+  {
     $this->cache = Mage::getSingleton('core/cache');
   }
 
@@ -19,16 +19,16 @@ class Taxjar_SalesTax_Model_Rate {
    * @param JSON $string
    * @return array
    */
-  public function create( $rateJson ) {
+  public function create($rateJson)
+  {
     try {
       $zip        = $rateJson['zip'];
       $regionCode = $rateJson['state'];
       $rate       = $rateJson['rate'];
       
-      if ( isset( $rateJson['country'] ) ) {
+      if (isset($rateJson['country'])) {
         $countryCode = $rateJson['country'];
-      }
-      else {
+      } else {
         $countryCode = 'US';
       }
       
@@ -49,21 +49,49 @@ class Taxjar_SalesTax_Model_Rate {
       $rateModel->setRate($rate);
       $rateModel->save();
 
-      if ( $rateJson['freight_taxable'] ) {
+      if ($rateJson['freight_taxable']) {
         $shippingRateId = $rateModel->getId();
-      }
-      else {
+      } else {
         $shippingRateId = 0;
       }
 
-      return array( $rateModel->getId(), $shippingRateId );
-    }
-    catch ( Exception $e ) {
-      Mage::getSingleton('core/session')->addNotice( "There was an error encountered while loading rate with code " . $rateModel->getCode() . ". This is most likely due to duplicate codes and can be safely ignored if lots of other rates were loaded. If the error persists, email support@taxjar.com with a screenshot of any Magento errors displayed." );
-      unset( $rateModel );
+      return array($rateModel->getId(), $shippingRateId);
+    } catch (Exception $e) {
+      Mage::getSingleton('core/session')->addNotice("There was an error encountered while loading rate with code " . $rateModel->getCode() . ". This is most likely due to duplicate codes and can be safely ignored if lots of other rates were loaded. If the error persists, email support@taxjar.com with a screenshot of any Magento errors displayed.");
+      unset($rateModel);
       return;
     }
   }
+  
+  /**
+   * Get existing TaxJar calculations based on configuration states
+   *
+   * @param void
+   * @return $array
+   */
+  public function getExistingRates()
+  {
+    return Mage::getModel('tax/calculation_rate')
+      ->getCollection()
+      ->addFieldToFilter('tax_region_id', $this->getRegionFilter());
+  }
 
+  /**
+   * Get region filter for existing configuration states
+   *
+   * @param void
+   * @return void
+   */
+  private function getRegionFilter()
+  {
+    $states = unserialize(Mage::getStoreConfig('taxjar/config/states'));
+    $filter = [];
+
+    foreach (array_unique($states) as $state) {
+      $regionId = Mage::getModel('directory/region')->loadByCode($state, 'US')->getId();
+      $filter[] = array('finset' => array($regionId));
+    }
+    
+    return $filter;
+  }
 }
-
