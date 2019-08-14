@@ -122,6 +122,7 @@ class Taxjar_SalesTax_Model_Observer {
 
     @unlink( $filename );
     Mage::getSingleton('core/session')->addSuccess("TaxJar has added new rates to your database! Thanks for using TaxJar!");
+    Mage::dispatchEvent('taxjar_salestax_import_rates_after');
   }
 
   /**
