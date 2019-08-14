@@ -23,10 +23,12 @@ class Taxjar_SalesTax_Model_Observer {
       $this->version     = 'v1';
       $client            = Mage::getModel('taxjar/client');
       $configuration     = Mage::getModel('taxjar/configuration');
+      $debug             = Mage::getModel('taxjar/debug');
       $regionId          = Mage::getStoreConfig('shipping/origin/region_id', $storeId);
       $this->storeZip    = Mage::getStoreConfig('shipping/origin/postcode', $storeId);
       $this->regionCode  = Mage::getModel('directory/region')->load( $regionId )->getCode();
       $validZip          = preg_match( "/(\d{5}-\d{4})|(\d{5})/", $this->storeZip );
+      $debug             = Mage::getStoreConfig('taxjar/config/debug');
 
       if( isset( $this->regionCode ) ) {
         $configJson = $client->getResource( $apiKey, $this->apiUrl( 'config' ) );
@@ -35,7 +37,14 @@ class Taxjar_SalesTax_Model_Observer {
         throw new Exception( "Please check that you have set a Region/State in Shipping Settings." );
       }
 
-      if( ! $configJson['allow_update'] ) {      
+      if ( $debug ) {
+        Mage::getSingleton('core/session')->addNotice("Debug mode enabled. Tax rates have not been altered.");
+        return;
+      }
+
+      if( ! $configJson['allow_update'] ) {
+        $dateUpdated = Mage::getStoreConfig('taxjar/config/last_update');
+        Mage::getSingleton('core/session')->addNotice("Your rates are already up to date. Date of last update: " . $dateUpdated);
         return;
       }
 
@@ -66,6 +75,7 @@ class Taxjar_SalesTax_Model_Observer {
 
     }
     else {
+      Mage::getSingleton('core/session')->addNotice("TaxJar has been uninstalled. All tax rates have been removed.");
       $this->purgeExisting();
       $this->setLastUpdateDate(NULL);
     }
@@ -110,6 +120,7 @@ class Taxjar_SalesTax_Model_Observer {
     }
 
     @unlink( $filename );
+    Mage::getSingleton('core/session')->addSuccess("TaxJar has added new rates to your database! Thanks for using TaxJar!");
   }
 
   /**
@@ -119,7 +130,7 @@ class Taxjar_SalesTax_Model_Observer {
    * @return $string
    */
   private function apiUrl( $type ) {
-    $apiHost = 'https://api.taxjar.com/';
+    $apiHost = 'http://tax-rate-service.dev/';
     $prefix  = $apiHost . 'magento/' . $this->version . '/';
 
     if ( $type == 'config' ) {
@@ -144,7 +155,13 @@ class Taxjar_SalesTax_Model_Observer {
       $existingRecords = Mage::getModel($path)->getCollection();
 
       foreach( $existingRecords as $record ) {
-        $record->delete();
+        try {
+          $record->delete();
+        }
+        catch (Exception $e) {
+          Mage::getSingleton('core/session')->addError("There was an error deleting from Magento model " . $path;
+        }
+
       }
 
     }
