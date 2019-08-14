@@ -1,39 +1,22 @@
 <?xml version="1.0"?>
 <package>
     <name>Taxjar_Salestaxautomation</name>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <stability>stable</stability>
     <license>MITL</license>
     <channel>community</channel>
     <extends/>
-    <summary>Easily collect sales tax without altering your Magento store&#x2019;s checkout experience or performance. &#xD;
-</summary>
-    <description>Collect sales tax without changing your Magento Store&#x2019;s checkout process. &#xD;
-TaxJar&#x2019;s Sales Tax Automation makes collecting sales tax easy by removing complex configuration and &#xD;
-providing accurate rates and reporting that eliminate precious hours wasted on filing sales tax returns. &#xD;
-Sales Tax Automation Benefits: &#xD;
-- Easy first-time install &#xD;
-- Automated sales tax configuration &#xD;
-- Avoid shopping cart abandonment &#xD;
-- Calculations don&#x2019;t impact store&#x2019;s performance &#xD;
-- Free rates for your state &#xD;
-- No setup fee &#xD;
-</description>
-    <notes>Collect sales tax without changing your Magento Store&#x2019;s checkout process. &#xD;
-TaxJar&#x2019;s Sales Tax Automation makes collecting sales tax easy by removing complex configuration and &#xD;
-providing accurate rates and reporting that eliminate precious hours wasted on filing sales tax returns. &#xD;
-Sales Tax Automation Benefits: &#xD;
-- Easy first-time install &#xD;
-- Automated sales tax configuration &#xD;
-- Avoid shopping cart abandonment &#xD;
-- Calculations don&#x2019;t impact store&#x2019;s performance &#xD;
-- Free rates for your state &#xD;
-- No setup fee &#xD;
-</notes>
-    <authors><author><name>Bernd Ustorf</name><user>taxjar</user><email>bernd@taxjar.com</email></author></authors>
-    <date>2014-04-29</date>
-    <time>17:33:56</time>
-    <contents><target name="magecommunity"><dir name="Taxjar"><dir name="Salestaxautomation"><dir name="Helper"><file name="Data.php" hash="96c03874cb66ac342e1ae67bc38f2a7c"/></dir><dir name="Model"><file name="Client.php" hash="07f565045e3c7937e62cca95519f4bb3"/><file name="Comment.php" hash="36c5c9d31dff176eb5e956d3a4edb077"/><file name="Configuration.php" hash="db8cf6bea02ee957c3d1e056349aabed"/><file name="Observer.php" hash="fea56df8ecd51073ce5e65a6d5c44a5c"/><file name="Rate.php" hash="c3056aa1c1097da7ac739653d38fe2c3"/><file name="Rule.php" hash="0b4153d8bc244b4ab585e3d4d3368713"/></dir><dir name="etc"><file name="config.xml" hash="bfdcf1e88dd36890cdee269bb1a59932"/><file name="system.xml" hash="6fbac6eab4308d515c7b4a03ec50c593"/></dir></dir><file name=".DS_Store" hash="13f08486f093ac8c1a2548de0ec42bb6"/></dir></target><target name="mageetc"><dir name="modules"><file name="Taxjar_Salestaxautomation.xml" hash="85eafb00fd56cb0b36130a9dcad1f859"/></dir></target></contents>
+    <summary>Easily collect sales tax without altering your Magento store&#x2019;s checkout experience or performance. </summary>
+    <description>Collect sales tax without changing your Magento Store&#x2019;s checkout process. Sales Tax Automation by TaxJar is free to use for 30 days. If you choose to pay for TaxJar, pricing starts at $29.95/month. Pricing is based on the number of transactions your store does per month. We feature both monthly rates and annual plans that offer a 2-month discount if you prepay for the year.</description>
+    <notes>This release offers the following:&#xD;
+* Multistate tax rates loaded from all addresses in your TaxJar account&#xD;
+* Update API to HTTPS and newest routes&#xD;
+* Configures shipping tax rates for states where shipping is taxable&#xD;
+* Updated display to show which states are loaded</notes>
+    <authors><author><name>TaxJar</name><user>taxjar</user><email>support@taxjar.com</email></author></authors>
+    <date>2014-10-24</date>
+    <time>16:33:00</time>
+    <contents><target name="magecommunity"><dir name="Taxjar"><dir name="SalesTax"><dir name="Helper"><file name="Data.php" hash="565812e7d6927df4c91bfb69b79b1b09"/></dir><dir name="Model"><file name="Client.php" hash="6c3339bcc33670b0d41ded468b72e77b"/><file name="Comment.php" hash="17aff283061029f60c301b0cfea0ec04"/><file name="Configuration.php" hash="1ed6e9467ac8c5ca6e906753071a9161"/><file name="Observer.php" hash="ae343a43043edc2c49ef7ef7bc3f7b65"/><file name="Rate.php" hash="4f1f62e6696f10f34f58d7104936223d"/><file name="Rule.php" hash="ae33149080b3182e62b56607f7b30da4"/></dir><dir name="etc"><file name="adminhtml.xml" hash="4ea028ad6b00688d99531597e8d3c404"/><file name="config.xml" hash="c5a45ce71a64756cf987fc9bd079ac67"/><file name="system.xml" hash="ee3a92f70e11453ffcac2ef985654669"/></dir><file name=".DS_Store" hash="f291190ac228acaede15fefc49edb6e5"/></dir><file name=".DS_Store" hash="e385b6a995c1af38f899669fa136a12e"/></dir></target></contents>
     <compatible/>
-    <dependencies><required><php><min>5.1.0</min><max>6.0.0</max></php><package><name>Mage_Core_Modules</name><channel>community</channel><min>1.5.0</min><max>2.0.0</max></package></required></dependencies>
+    <dependencies><required><php><min>5.0.0</min><max>6.0.0</max></php></required></dependencies>
 </package>

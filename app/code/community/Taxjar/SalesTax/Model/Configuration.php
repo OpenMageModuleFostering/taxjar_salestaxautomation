@@ -1,23 +1,50 @@
 <?php
-class Taxjar_Salestaxautomation_Model_Configuration {
 
+/**
+ * TaxJar configuration setter
+ *
+ * @author Taxjar (support@taxjar.com)
+ */
+class Taxjar_SalesTax_Model_Configuration {
 
-  public function setShippingTaxability($configJson) {
+  /**
+   * Sets shipping taxability in Magento
+   *
+   * @param JSON $string
+   * @return void
+   */
+  public function setShippingTaxability( $configJson ) {
     $taxClass = 0;
-    if($configJson['freight_taxable']) {
+
+    if( $configJson['freight_taxable'] ) {
       $taxClass = 4;
     }
-    $this->_setConfig('tax/classes/shipping_tax_class', $taxClass);
+
+    $this->setConfig('tax/classes/shipping_tax_class', $taxClass);
   }
 
-  public function setTaxBasis($configJson) {
+  /**
+   * Sets tax basis in Magento
+   *
+   * @param JSON $string
+   * @return void
+   */
+  public function setTaxBasis( $configJson ) {
     $basis = 'shipping';
-    if($configJson['tax_source']==='origin') {
+
+    if( $configJson['tax_source'] === 'origin' ) {
       $basis = 'origin';
     }
-    $this->_setConfig('tax/calculation/based_on', $basis);
+
+    $this->setConfig('tax/calculation/based_on', $basis);
   }
 
+  /**
+   * Set display settings for tax in Magento
+   *
+   * @param void
+   * @return void
+   */
   public function setDisplaySettings() {
     $settings = array(
       'tax/display/type', 
@@ -26,23 +53,40 @@ class Taxjar_Salestaxautomation_Model_Configuration {
       'tax/cart_display/subtotal',
       'tax/cart_display/shipping'
     );
-    foreach($settings as $setting) {
-      $this->_setConfig($setting, 1);
+
+    foreach( $settings as $setting ) {
+      $this->setConfig($setting, 1);
     }
+
   }
 
-  public function setApiSettings($apiKey) {
-    $apiUser = Mage::getModel('api/user');
+  /**
+   * Setup the TaxJar API user
+   *
+   * @param $string
+   * @return void
+   */
+  public function setApiSettings( $apiKey ) {
+    $apiUser        = Mage::getModel('api/user');
     $existingUserId = $apiUser->load('taxjar', 'username')->getUserId();
-    if(!$existingUserId) {
-      $apiUserId = $this->_createApiUser($apiKey);
-      $parentRoleId = $this->_createApiRoles($apiUserId);
-      $this->_createApiRules($parentRoleId);
+
+    if( !$existingUserId ) {
+      $apiUserId = $this->createApiUser($apiKey);
+      $parentRoleId = $this->createApiRoles($apiUserId);
+      $this->createApiRules($parentRoleId);
     }
+
   }
 
-  private function _createApiRules($parentRoleId) {
-    foreach($this->_resourcesToAllow() as $resource){
+  /**
+   * Set the API resources for our API user
+   *
+   * @param void
+   * @return void
+   */
+  private function createApiRules( $parentRoleId ) {
+
+    foreach( $this->resourcesToAllow() as $resource ) {
       $apiRule = Mage::getModel('api/rules');
       $apiRule->setRoleId($parentRoleId);
       $apiRule->setResourceId($resource);
@@ -51,17 +95,24 @@ class Taxjar_Salestaxautomation_Model_Configuration {
       $apiRule->save();
     }
 
-    foreach($this->_resourcesToDeny() as $resource){
+    foreach( $this->resourcesToDeny() as $resource ) {
       $apiRule = Mage::getModel('api/rules');
       $apiRule->setRoleId($parentRoleId);
       $apiRule->setResourceId($resource);
       $apiRule->setRoleType('G');
       $apiRule->setApiPermission('deny');
       $apiRule->save();
-    }    
+    }
+
   }
 
-  private function _createApiRoles($apiUserId) {
+  /**
+   * Set the roles for our API User
+   *
+   * @param $integer
+   * @return $integer
+   */
+  private function createApiRoles( $apiUserId ) {
     $parentApiRole = Mage::getModel('api/role');
     $parentApiRole->setRoleName('taxjar_api');
     $parentApiRole->setTreeLevel(1);
@@ -70,33 +121,53 @@ class Taxjar_Salestaxautomation_Model_Configuration {
     $parentRoleId = $parentApiRole->getId();
 
     $childApiRole = Mage::getModel('api/role');
-    $childApiRole->setRoleName('Mark');
+    $childApiRole->setRoleName('TaxJar');
     $childApiRole->setTreeLevel(1);
     $childApiRole->setParentId($parentRoleId);
     $childApiRole->setRoleType('U');
     $childApiRole->setUserId($apiUserId);
     $childApiRole->save();
+
     return $parentRoleId;
   }
 
-  private function _createApiUser($apiKey) {
+  /**
+   * Set the API resources for our API user
+   *
+   * @param void
+   * @return void
+   */
+  private function createApiUser( $apiKey ) {
     $apiUser = Mage::getModel('api/user');
     $apiUser->setUsername('taxjar');
-    $apiUser->setFirstname('Mark');
-    $apiUser->setLastname('Faggiano');
-    $apiUser->setEmail('admin@taxjar.com');
+    $apiUser->setFirstname('TaxJar');
+    $apiUser->setLastname('Magento');
+    $apiUser->setEmail('support@taxjar.com');
     $apiUser->setApiKey($apiKey);
     $apiUser->setIsActive(1);
     $apiUser->save();
+
     return $apiUser->getUserId(); 
   }
 
-  private function _setConfig($path, $value){
+  /**
+   * Store config
+   *
+   * @param $string, $mixed
+   * @return void
+   */
+  private function setConfig( $path, $value ) {
     $config = new Mage_Core_Model_Config();
     $config->saveConfig($path, $value, 'default', 0);
   }
 
-  private function _resourcesToAllow() {
+  /**
+   * resources to allow for our API user
+   *
+   * @param void
+   * @return $array
+   */
+  private function resourcesToAllow() {
     return array(
       'sales',
       'sales/order',
@@ -124,7 +195,13 @@ class Taxjar_Salestaxautomation_Model_Configuration {
     );
   }
 
-  private function _resourcesToDeny() {
+  /**
+   * resources to deny for our API user
+   *
+   * @param void
+   * @return $array
+   */
+  private function resourcesToDeny() {
     return array(
       'core',
       'core/store',
@@ -249,8 +326,6 @@ class Taxjar_Salestaxautomation_Model_Configuration {
       'all'
     );
   }
-
-
 
 }
 ?>
