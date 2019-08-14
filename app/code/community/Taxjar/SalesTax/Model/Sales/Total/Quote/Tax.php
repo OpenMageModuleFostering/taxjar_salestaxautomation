@@ -50,11 +50,6 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
             } else {
                 $shippingTaxAmount = 0;
             }
-            
-            $taxAmount = $rates['amount_to_collect'] - $shippingTaxAmount;
-
-            $this->_addAmount($store->convertPrice($taxAmount));
-            $this->_addBaseAmount($taxAmount);
 
             $this->_addAmount($store->convertPrice($shippingTaxAmount));
             $this->_addBaseAmount($shippingTaxAmount);
@@ -64,70 +59,19 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
             
             if (count($items) > 0) {
                 foreach ($items as $item) {
-                    $itemTax = $smartCalcs->getResponseLineItem($item->getProductId());
+                    $itemTax = $smartCalcs->getResponseLineItem($item->getId());
                     
                     if (isset($itemTax)) {
+                        $this->_addAmount($store->convertPrice($itemTax['tax_collectable']));
+                        $this->_addBaseAmount($itemTax['tax_collectable']);
                         $item->setTaxPercent($itemTax['combined_tax_rate'] * 100);
                         $item->setTaxAmount($store->convertPrice($itemTax['tax_collectable']));
-                        $item->setBaseTaxAmount($itemTax['tax_collectable']);    
+                        $item->setBaseTaxAmount($itemTax['tax_collectable']);
                     }
                 }    
             }
         } else {
-            $this->_store = $address->getQuote()->getStore();
-            $customer = $address->getQuote()->getCustomer();
-            if ($customer) {
-                $this->_calculator->setCustomer($customer);
-            }
-
-            if (!$address->getAppliedTaxesReset()) {
-                $address->setAppliedTaxes(array());
-            }
-
-            $items = $this->_getAddressItems($address);
-            if (!count($items)) {
-                return $this;
-            }
-            $request = $this->_calculator->getRateRequest(
-                $address,
-                $address->getQuote()->getBillingAddress(),
-                $address->getQuote()->getCustomerTaxClassId(),
-                $this->_store
-            );
-
-            if ($this->_config->priceIncludesTax($this->_store)) {
-                if ($this->_helper->isCrossBorderTradeEnabled($this->_store)) {
-                    $this->_areTaxRequestsSimilar = true;
-                } else {
-                    $this->_areTaxRequestsSimilar = $this->_calculator->compareRequests(
-                        $this->_calculator->getRateOriginRequest($this->_store),
-                        $request
-                    );
-                }
-            }
-
-            switch ($this->_config->getAlgorithm($this->_store)) {
-                case Mage_Tax_Model_Calculation::CALC_UNIT_BASE:
-                    $this->_unitBaseCalculation($address, $request);
-                    break;
-                case Mage_Tax_Model_Calculation::CALC_ROW_BASE:
-                    $this->_rowBaseCalculation($address, $request);
-                    break;
-                case Mage_Tax_Model_Calculation::CALC_TOTAL_BASE:
-                    $this->_totalBaseCalculation($address, $request);
-                    break;
-                default:
-                    break;
-            }
-
-            $this->_addAmount($address->getExtraTaxAmount());
-            $this->_addBaseAmount($address->getBaseExtraTaxAmount());
-            $this->_calculateShippingTax($address, $request);
-
-            $this->_processHiddenTaxes();
-
-            //round total amounts in address
-            $this->_roundTotals($address);
+            return parent::collect($address);
         }
 
         return $this;

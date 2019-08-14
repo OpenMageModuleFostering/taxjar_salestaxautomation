@@ -1,7 +1,7 @@
 {
     "name": "OpenMageModuleFostering/Taxjar_Salestaxautomation",
     "type": "magento-module",
-    "license": "MIT",
+    "license": "OSL-3.0",
     "homepage": "",
     "description": "Easily collect sales tax without altering your Magento store’s checkout experience or performance.",
     "authors": [

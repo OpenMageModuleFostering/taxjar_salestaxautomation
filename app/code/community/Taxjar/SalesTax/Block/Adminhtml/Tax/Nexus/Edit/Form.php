@@ -106,9 +106,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Nexus_Edit_Form extends Mage_Adminhtml
             array(
                 'name'     => 'region_id',
                 'label'    => Mage::helper('taxjar')->__('State/Region'),
-                'class'    => 'required-entry',
-                'values'   => $regions,
-                'required' => true
+                'values'   => $regions
             )
         );
         

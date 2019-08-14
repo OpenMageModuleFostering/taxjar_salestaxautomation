@@ -43,11 +43,11 @@ class Taxjar_SalesTax_Model_Smartcalcs
             return;
         }
 
-        if (!$address->getRegionCode() || !$address->getPostcode()) {
+        if (!$address->getPostcode()) {
             return;
         }
 
-        if (!$this->_hasNexus($address->getRegionCode())) {
+        if (!$this->_hasNexus($address->getRegionCode(), $address->getCountry())) {
             return;
         }
 
@@ -130,16 +130,16 @@ class Taxjar_SalesTax_Model_Smartcalcs
      *
      * @return array
      */
-    public function getResponseLineItem($productId)
+    public function getResponseLineItem($id)
     {        
         if ($this->_response) {
             $responseBody = json_decode($this->_response->getBody(), true);
 
             if (isset($responseBody['tax']['breakdown']['line_items'])) {
                 $lineItems = $responseBody['tax']['breakdown']['line_items'];
-                $matchedKey = array_search($productId, Mage::helper('taxjar')->array_column($lineItems, 'id'));
+                $matchedKey = array_search($id, Mage::helper('taxjar')->array_column($lineItems, 'id'));
                 
-                if (isset($lineItems[$matchedKey])) {
+                if (isset($lineItems[$matchedKey]) && $matchedKey !== false) {
                     return $lineItems[$matchedKey];
                 }
             }
@@ -150,17 +150,28 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * Verify if nexus is triggered for location
      *
      * @param  string $regionCode
+     * @param  string $country
      * @return bool
      */
-    private function _hasNexus($regionCode)
+    private function _hasNexus($regionCode, $country)
     {
-        $nexusInRegion = Mage::getModel('taxjar/tax_nexus')->getCollection()->addFieldToFilter('region_code', $regionCode);
-
-        if ($nexusInRegion->getSize()) {
-            return true;
+        $nexusCollection = Mage::getModel('taxjar/tax_nexus')->getCollection();
+        
+        if ($country == 'US') {
+            $nexusInRegion = $nexusCollection->addFieldToFilter('region_code', $regionCode);
+            
+            if ($nexusInRegion->getSize()) {
+                return true;
+            }
         } else {
-            return false;
+            $nexusInCountry = $nexusCollection->addFieldToFilter('country_id', $country);
+            
+            if ($nexusInCountry->getSize()) {
+                return true;
+            }
         }
+        
+        return false;
     }
 
     /**
@@ -176,20 +187,22 @@ class Taxjar_SalesTax_Model_Smartcalcs
 
         if (count($items) > 0) {
             foreach ($items as $item) {
-                $id = $item->getProductId();
+                $id = $item->getId();
                 $quantity = $item->getQty();
                 $taxClass = Mage::getModel('tax/class')->load($item->getProduct()->getTaxClassId());
                 $taxCode = $taxClass->getTjSalestaxCode();
                 $unitPrice = (float) $item->getPrice();
                 $discount = (float) $item->getDiscountAmount();
 
-                array_push($lineItems, array(
-                    'id' => $id,
-                    'quantity' => $quantity,
-                    'product_tax_code' => $taxCode,
-                    'unit_price' => $unitPrice,
-                    'discount' => $discount,
-                ));
+                if ($unitPrice) {
+                    array_push($lineItems, array(
+                        'id' => $id,
+                        'quantity' => $quantity,
+                        'product_tax_code' => $taxCode,
+                        'unit_price' => $unitPrice,
+                        'discount' => $discount,
+                    ));    
+                }
             }
         }
 

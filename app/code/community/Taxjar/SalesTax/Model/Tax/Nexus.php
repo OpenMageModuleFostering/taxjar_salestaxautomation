@@ -153,10 +153,6 @@ class Taxjar_SalesTax_Model_Tax_Nexus extends Mage_Core_Model_Abstract
             $errors[] = Mage::helper('taxjar')->__('Country can\'t be empty');
         }
         
-        if (!Zend_Validate::is($this->getRegionId(), 'NotEmpty')) {
-            $errors[] = Mage::helper('taxjar')->__('State/region can\'t be empty');
-        }
-        
         if (!Zend_Validate::is($this->getPostcode(), 'NotEmpty')) {
             $errors[] = Mage::helper('taxjar')->__('Zip/Post Code can\'t be empty');
         }
