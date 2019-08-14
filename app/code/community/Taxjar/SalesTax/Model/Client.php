@@ -22,7 +22,12 @@ class Taxjar_SalesTax_Model_Client {
       return json_decode($json, true);
     }
     else {
-      throw new Exception('Could not connect to TaxJar.');
+      if ( $response->getStatus() == 403 ) {
+        Mage::throwException('Your last rate update was too recent. Please wait at least 5 minutes and try again.');
+      }
+      else {
+        Mage::throwException('Could not connect to TaxJar.');
+      }
     }
   }  
 

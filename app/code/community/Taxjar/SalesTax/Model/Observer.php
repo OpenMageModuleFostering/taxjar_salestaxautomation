@@ -13,14 +13,14 @@ class Taxjar_SalesTax_Model_Observer {
    * @param Varien_Event_Observer $observer
    * @return void
    */
-  public function execute( $observer ) {
+  public function execute( $observer ) {    
     $session = Mage::getSingleton( 'adminhtml/session' );
     $storeId = Mage::getModel('core/store')->load( $observer->getEvent()->getStore() )->getStoreId();
     $apiKey = Mage::getStoreConfig('taxjar/config/apikey', $storeId);
     $apiKey = preg_replace( '/\s+/', '', $apiKey );
 
     if ( $apiKey ) {
-      $this->version     = 'v1';
+      $this->version     = 'v2';
       $client            = Mage::getModel('taxjar/client');
       $configuration     = Mage::getModel('taxjar/configuration');
       $regionId          = Mage::getStoreConfig('shipping/origin/region_id', $storeId);
@@ -31,9 +31,10 @@ class Taxjar_SalesTax_Model_Observer {
 
       if( isset( $this->regionCode ) ) {
         $configJson = $client->getResource( $apiKey, $this->apiUrl( 'config' ) );
+        $configJson = $configJson['configuration'];
       }
       else {
-        throw new Exception( "Please check that you have set a Region/State in Shipping Settings." );
+        Mage::throwException("Please check that you have set a Region/State in Shipping Settings.");
       }
 
       if ( $debug ) {
@@ -41,7 +42,7 @@ class Taxjar_SalesTax_Model_Observer {
         return;
       }
 
-      if( ! $configJson['allow_update'] ) {
+      if( $configJson['wait_for_rates'] > 0 ) {
         $dateUpdated = Mage::getStoreConfig('taxjar/config/last_update');
         Mage::getSingleton('core/session')->addNotice("Your last rate update was too recent. Please wait at least 5 minutes and try again.");
         return;
@@ -51,7 +52,7 @@ class Taxjar_SalesTax_Model_Observer {
         $ratesJson = $client->getResource( $apiKey, $this->apiUrl( 'rates' ));
       }
       else {
-        throw new Exception("Please check that your zip code is a valid US zip code in Shipping Settings.");
+        Mage::throwException("Please check that your zip code is a valid US zip code in Shipping Settings.");
       }
 
       Mage::getModel('core/config')
@@ -69,7 +70,7 @@ class Taxjar_SalesTax_Model_Observer {
       }
       else {
         // We need to be able to store the file...
-        throw new Exception("Could not write to your Magento temp directory. Please check permissions for " . Mage::getBaseDir('tmp') . ".");
+        Mage::throwException("Could not write to your Magento temp directory. Please check permissions for " . Mage::getBaseDir('tmp') . ".");
       }
 
     }
@@ -101,7 +102,7 @@ class Taxjar_SalesTax_Model_Observer {
     $shippingTaxable           = Mage::getStoreConfig('taxjar/config/freight_taxable');
     $ratesJson                 = unserialize( file_get_contents( $filename ) );
 
-    foreach( $ratesJson as $rateJson ) {
+    foreach( $ratesJson['rates'] as $rateJson ) {
       $rateIdWithShippingId = $rate->create( $rateJson );
       
       if ( $rateIdWithShippingId[0] ) {
@@ -133,13 +134,13 @@ class Taxjar_SalesTax_Model_Observer {
    */
   private function apiUrl( $type ) {
     $apiHost = 'https://api.taxjar.com/';
-    $prefix  = $apiHost . 'magento/' . $this->version . '/';
+    $prefix  = $apiHost . $this->version . '/plugins/magento/';
 
     if ( $type == 'config' ) {
-      return $prefix . 'get_configuration/' . $this->regionCode;
+      return $prefix . 'configuration/' . $this->regionCode;
     }
     elseif ( $type == 'rates' ) {
-      return $prefix . 'get_rates/' . $this->regionCode . '/' . $this->storeZip;
+      return $prefix . 'rates/' . $this->regionCode . '/' . $this->storeZip;
     }
   }
 
