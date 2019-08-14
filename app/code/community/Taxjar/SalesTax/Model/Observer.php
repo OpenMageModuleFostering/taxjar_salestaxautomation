@@ -15,16 +15,15 @@ class Taxjar_SalesTax_Model_Observer {
    */
   public function execute( $observer ) {
     $session = Mage::getSingleton( 'adminhtml/session' );
-    $storeId = ( $observer->getEvent() ? Mage::getModel('core/store')->load( $observer->getEvent()->getStore() )->getStoreId() : Mage::app()->getDefaultStoreView()->getStoreId() );
-    $apiKey = Mage::getStoreConfig('taxjar/config/apikey', $storeId);
+    $apiKey = Mage::getStoreConfig('taxjar/config/apikey');
     $apiKey = preg_replace( '/\s+/', '', $apiKey );
 
     if ( $apiKey ) {
       $this->version     = 'v2';
       $client            = Mage::getModel('taxjar/client');
       $configuration     = Mage::getModel('taxjar/configuration');
-      $regionId          = Mage::getStoreConfig('shipping/origin/region_id', $storeId);
-      $this->storeZip    = Mage::getStoreConfig('shipping/origin/postcode', $storeId);
+      $regionId          = Mage::getStoreConfig('shipping/origin/region_id');
+      $this->storeZip    = Mage::getStoreConfig('shipping/origin/postcode');
       $this->regionCode  = Mage::getModel('directory/region')->load( $regionId )->getCode();
       $validZip          = preg_match( "/(\d{5}-\d{4})|(\d{5})/", $this->storeZip );
       $debug             = Mage::getStoreConfig('taxjar/config/debug');
