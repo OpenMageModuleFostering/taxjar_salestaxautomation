@@ -19,7 +19,7 @@
  * SmartCalcs Model
  * Performs sales tax calculations at checkout
  */
-class Taxjar_SalesTax_Model_SmartCalcs
+class Taxjar_SalesTax_Model_Smartcalcs
 {
     protected $_response;
 

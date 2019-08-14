@@ -30,7 +30,7 @@ class Taxjar_SalesTax_Model_Observer_SaveConfig
             $client = Mage::getModel('taxjar/client');
             $configuration = Mage::getModel('taxjar/configuration');
             $regionId = Mage::getStoreConfig('shipping/origin/region_id');
-            $this->_storeZip = Mage::getStoreConfig('shipping/origin/postcode');
+            $this->_storeZip = trim(Mage::getStoreConfig('shipping/origin/postcode'));
             $this->_regionCode = Mage::getModel('directory/region')->load($regionId)->getCode();
             $validZip = preg_match("/(\d{5}-\d{4})|(\d{5})/", $this->_storeZip);
             $debug = Mage::getStoreConfig('taxjar/config/debug');
@@ -53,7 +53,7 @@ class Taxjar_SalesTax_Model_Observer_SaveConfig
                 return;
             }
 
-            if ($validZip === 1 && isset($this->_storeZip) && trim($this->_storeZip) !== '') {
+            if ($validZip === 1 && isset($this->_storeZip) && $this->_storeZip !== '') {
                 $ratesJson = $client->getResource($apiKey, $this->apiUrl('rates'));
             } else {
                 Mage::throwException('Please check that your zip code is a valid US zip code in Shipping Settings.');

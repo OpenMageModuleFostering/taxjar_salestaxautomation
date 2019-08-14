@@ -1,20 +1,20 @@
 <?xml version="1.0"?>
 <package>
     <name>Taxjar_Salestaxautomation</name>
-    <version>1.6.0</version>
+    <version>1.6.1</version>
     <stability>stable</stability>
     <license>MIT</license>
     <channel>community</channel>
     <extends/>
     <summary>Easily collect sales tax without altering your Magento store&#x2019;s checkout experience or performance.</summary>
     <description>TaxJar for Magento allows you to quickly calculate sales tax at checkout using our SmartCalcs API and zip-based rates as a backup.</description>
-    <notes>* SmartCalcs integration at checkout for live sales tax calculations and higher accuracy.&#xD;
-* Product tax code support for exemptions.&#xD;
-* Fix rule and rate purging when uninstalling extension.</notes>
+    <notes>* Hotfix SmartCalcs integration model casing.&#xD;
+* Trim shipping origin postal code before making API requests.&#xD;
+* Minor code cleanup.</notes>
     <authors><author><name>TaxJar</name><user>taxjar</user><email>support@taxjar.com</email></author></authors>
-    <date>2016-04-09</date>
-    <time>23:47:05</time>
-    <contents><target name="magecommunity"><dir name="Taxjar"><dir name="SalesTax"><dir name="Block"><dir name="Adminhtml"><dir name="Tax"><dir name="Class"><dir name="Edit"><file name="Form.php" hash="1e3f944f2c50c5ae9f215577c7f8eeba"/></dir><file name="Grid.php" hash="abee26b12865446aa06d30763c5c5d24"/></dir></dir></dir></dir><dir name="Helper"><file name="Data.php" hash="d19f2af9ff020d2e0d31369cf43eac50"/></dir><dir name="Model"><file name="Calculation.php" hash="89c05ee42f8316563ea610f11b53a26d"/><file name="Categories.php" hash="ec9523c7d5bdae21b48034434ea43797"/><file name="Client.php" hash="31cc9e1fdada520ee102b4bc2f443164"/><file name="Configuration.php" hash="831e93bcfdf2d10a55038f95dfcb00fb"/><file name="Debug.php" hash="8e9917de4d1938ba9d4c32acbeb7bf76"/><dir name="Import"><file name="Comment.php" hash="dff4f3c810e4c1e6e3ca7d85563636e9"/><file name="Rate.php" hash="1fcc66b5493c9963564fdd372e49a360"/><file name="Rule.php" hash="80f2a71950f0bf535608e25d99fbb236"/></dir><dir name="Observer"><file name="ImportRates.php" hash="6a9faaaa2231b04e430d3f4981d9ccdc"/><file name="SalesQuoteCollectTotalsBefore.php" hash="989a2823f1718385bec7143cc9a55ead"/><file name="SaveConfig.php" hash="ccb4ed24c3c6cc81f2ae632e53fdfb73"/></dir><dir name="Sales"><dir name="Total"><dir name="Quote"><file name="Tax.php" hash="ad8eacbe4e897c37ce3a1f0b173e7a64"/></dir></dir></dir><file name="SmartCalcs.php" hash="ea6b6d96137197979bf70a2200339375"/></dir><dir name="etc"><file name="adminhtml.xml" hash="440972a63d83b2475f187f38172f54ca"/><file name="config.xml" hash="edfc2d29d8c0e4edddfe8e0c9c21110d"/><file name="system.xml" hash="2e4defe58b81bfa07b5c8a91fe0a7963"/></dir><dir name="sql"><dir name="salestax_setup"><file name="install-1.6.0.php" hash="9d400004ec642113a8cc907fe5d33960"/></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Taxjar_SalesTax.xml" hash="552596be5ec12440753bf69ed6005747"/></dir></target></contents>
+    <date>2016-04-12</date>
+    <time>21:37:56</time>
+    <contents><target name="magecommunity"><dir name="Taxjar"><dir name="SalesTax"><dir name="Block"><dir name="Adminhtml"><dir name="Tax"><dir name="Class"><dir name="Edit"><file name="Form.php" hash="1e3f944f2c50c5ae9f215577c7f8eeba"/></dir><file name="Grid.php" hash="abee26b12865446aa06d30763c5c5d24"/></dir></dir></dir></dir><dir name="Helper"><file name="Data.php" hash="d19f2af9ff020d2e0d31369cf43eac50"/></dir><dir name="Model"><file name="Calculation.php" hash="89c05ee42f8316563ea610f11b53a26d"/><file name="Categories.php" hash="ec9523c7d5bdae21b48034434ea43797"/><file name="Client.php" hash="31cc9e1fdada520ee102b4bc2f443164"/><file name="Configuration.php" hash="831e93bcfdf2d10a55038f95dfcb00fb"/><file name="Debug.php" hash="1ae53e80ca55813260e24df9cb354a07"/><dir name="Import"><file name="Comment.php" hash="dff4f3c810e4c1e6e3ca7d85563636e9"/><file name="Rate.php" hash="1fcc66b5493c9963564fdd372e49a360"/><file name="Rule.php" hash="80f2a71950f0bf535608e25d99fbb236"/></dir><dir name="Observer"><file name="ImportRates.php" hash="6a9faaaa2231b04e430d3f4981d9ccdc"/><file name="SalesQuoteCollectTotalsBefore.php" hash="989a2823f1718385bec7143cc9a55ead"/><file name="SaveConfig.php" hash="26d8a559937081fd9d6c5620ea707ac2"/></dir><dir name="Sales"><dir name="Total"><dir name="Quote"><file name="Tax.php" hash="4fa3951e4de0174ea0fc3da3de64e741"/></dir></dir></dir><file name="Smartcalcs.php" hash="0dcb488208f445576935b3b22a280746"/></dir><dir name="etc"><file name="adminhtml.xml" hash="440972a63d83b2475f187f38172f54ca"/><file name="config.xml" hash="689e028a1427931d8e04c9aecc32d465"/><file name="system.xml" hash="2e4defe58b81bfa07b5c8a91fe0a7963"/></dir><dir name="sql"><dir name="salestax_setup"><file name="install-1.6.0.php" hash="9d400004ec642113a8cc907fe5d33960"/></dir></dir></dir></dir></target><target name="mageetc"><dir name="modules"><file name="Taxjar_SalesTax.xml" hash="552596be5ec12440753bf69ed6005747"/></dir></target></contents>
     <compatible/>
     <dependencies><required><php><min>5.0.0</min><max>6.0.0</max></php></required></dependencies>
 </package>
