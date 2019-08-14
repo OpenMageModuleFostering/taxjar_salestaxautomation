@@ -33,6 +33,7 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
             Mage::getConfig()->saveConfig('tax/taxjar/apikey', $apiKey);
             Mage::getConfig()->saveConfig('tax/taxjar/email', $apiEmail);
             Mage::getConfig()->saveConfig('tax/taxjar/connected', 1);
+            Mage::getConfig()->reinit();
             Mage::getSingleton('core/session')->addSuccess('TaxJar account for ' . $apiEmail . ' is now connected.');
         } else {
             Mage::getSingleton('core/session')->addError('Could not connect your TaxJar account. Please make sure you have a valid API token and try again.');

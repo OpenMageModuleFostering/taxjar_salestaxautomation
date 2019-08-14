@@ -69,7 +69,7 @@ class Taxjar_SalesTax_Model_Observer_ImportRates
             return;
         }
 
-        if (!empty($this->_storeZip) && preg_match("/(\d{5}-\d{4})|(\d{5})/", $this->_storeZip)) {
+        if ($this->_storeZip && preg_match("/(\d{5}-\d{4})|(\d{5})/", $this->_storeZip)) {
             $ratesJson = $this->_getRatesJson();
         } else {
             Mage::throwException('Please check that your zip code is a valid US zip code in Shipping Settings.');

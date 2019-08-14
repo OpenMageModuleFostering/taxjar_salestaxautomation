@@ -111,7 +111,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
      */
     public function getResponse()
     {
-        if (isset($this->_response)) {
+        if ($this->_response) {
             return array(
                 'body' => json_decode($this->_response->getBody(), true),
                 'status' => $this->_response->getStatus(),
@@ -130,8 +130,8 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @return array
      */
     public function getResponseLineItem($productId)
-    {
-        if (isset($this->_response)) {
+    {        
+        if ($this->_response) {
             $responseBody = json_decode($this->_response->getBody(), true);
 
             if (isset($responseBody['tax']['breakdown']['line_items'])) {

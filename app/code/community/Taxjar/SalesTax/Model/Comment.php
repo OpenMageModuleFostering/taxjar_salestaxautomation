@@ -88,7 +88,7 @@ class Taxjar_SalesTax_Model_Comment
         $connectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/connect');
         $disconnectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/disconnect');
         
-        if (!empty($this->_getStoreGeneralEmail())) {
+        if ($this->_getStoreGeneralEmail()) {
             $popupUrl .= '&email=' . urlencode($this->_getStoreGeneralEmail());
         }
         

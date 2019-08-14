@@ -44,9 +44,23 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
             $store = $address->getQuote()->getStore();
             $items = $this->_getAddressItems($address);
             $rates = $smartCalcsResponse['body']['tax'];
+            
+            if (isset($rates['breakdown']['shipping']['tax_collectable'])) {
+                $shippingTaxAmount = $rates['breakdown']['shipping']['tax_collectable'];
+            } else {
+                $shippingTaxAmount = 0;
+            }
+            
+            $taxAmount = $rates['amount_to_collect'] - $shippingTaxAmount;
 
-            $this->_addAmount($store->convertPrice($rates['amount_to_collect']));
-            $this->_addBaseAmount($rates['amount_to_collect']);
+            $this->_addAmount($store->convertPrice($taxAmount));
+            $this->_addBaseAmount($taxAmount);
+
+            $this->_addAmount($store->convertPrice($shippingTaxAmount));
+            $this->_addBaseAmount($shippingTaxAmount);
+
+            $address->setShippingTaxAmount($store->convertPrice($shippingTaxAmount));
+            $address->setBaseShippingTaxAmount($shippingTaxAmount);
             
             if (count($items) > 0) {
                 foreach ($items as $item) {

@@ -21,7 +21,7 @@
  */
 class Taxjar_SalesTax_Block_Adminhtml_Enabled extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
-    protected function _getElementHtml($element)
+    protected function _getElementHtml(Varien_Data_Form_Element_Abstract $element)
     {
         $apiKey = trim(Mage::getStoreConfig('tax/taxjar/apikey'));
         
