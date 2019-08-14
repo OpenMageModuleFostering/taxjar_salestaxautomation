@@ -19,7 +19,7 @@
 <config>
     <modules>
         <Taxjar_SalesTax>
-            <version>2.2.1</version>
+            <version>2.3.0</version>
         </Taxjar_SalesTax>
     </modules>
     <global>
@@ -52,6 +52,11 @@
                     </tax_nexus>
                 </entities>
             </taxjar_resource>
+            <sales>
+                <rewrite>
+                    <order_api_v2>Taxjar_SalesTax_Model_Sales_Order_Api_V2</order_api_v2>
+                </rewrite>
+            </sales>
             <tax_resource>
                 <rewrite>
                     <calculation>Taxjar_SalesTax_Model_Calculation</calculation>

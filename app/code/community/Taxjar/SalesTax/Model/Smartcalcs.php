@@ -54,6 +54,10 @@ class Taxjar_SalesTax_Model_Smartcalcs
         if (!count($address->getAllItems())) {
             return;
         }
+        
+        if ($this->_isCustomerExempt($address)) {
+            return;
+        }
 
         $fromAddress = array(
             'from_country' => Mage::getStoreConfig('shipping/origin/country_id', $storeId),
@@ -169,6 +173,24 @@ class Taxjar_SalesTax_Model_Smartcalcs
             if ($nexusInCountry->getSize()) {
                 return true;
             }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Verify if customer is exempt from sales tax
+     *
+     * @param  object $address
+     * @return bool
+     */
+    private function _isCustomerExempt($address)
+    {
+        $customerTaxClass = Mage::getModel('tax/class')->load($address->getQuote()->getCustomerTaxClassId());
+        $customerTaxCode = $customerTaxClass->getTjSalestaxCode();
+        
+        if ($customerTaxCode == '99999') {
+            return true;
         }
         
         return false;

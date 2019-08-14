@@ -35,6 +35,20 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Edit_Form extends Mage_Adminhtml
                 )
             );    
         }
+        
+        if ($connected && $this->getClassType() == 'CUSTOMER') {
+            $fieldset->addField(
+                'tj_salestax_code', 'select', array(
+                    'name'  => 'tj_salestax_code',
+                    'label' => Mage::helper('taxjar')->__('TaxJar Exempt'),
+                    'value' => $currentClass->getTjSalestaxCode(),
+                    'values' => array(
+                        '99999' => 'Yes',
+                        '' => 'No'
+                    )
+                )
+            );    
+        }
 
         return $this;
     }

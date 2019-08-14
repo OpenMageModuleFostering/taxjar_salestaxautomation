@@ -34,6 +34,19 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Grid extends Mage_Adminhtml_Bloc
                 )
             );
         }
+        
+        if ($connected && $this->getClassType() == 'CUSTOMER') {
+            $this->addColumn(
+                'tj_salestax_code', array(
+                    'header'   => Mage::helper('taxjar')->__('TaxJar Exempt'),
+                    'align'    => 'left',
+                    'index'    => 'tj_salestax_code',
+                    'renderer' => 'Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Grid_Renderer_Exempt',
+                    'width'    => '150px',
+                    'type'     => 'text'
+                )
+            );
+        }
 
         return $this;
     }
