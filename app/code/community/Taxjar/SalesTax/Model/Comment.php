@@ -54,7 +54,7 @@ class Taxjar_SalesTax_Model_Comment
         $htmlString .= "<p class='note'><span>TaxJar Account</span></p>";
         $htmlString .= "<ul class='messages'><li class='success-msg'><span style='font-size: 1.4em'>" . $this->_apiEmail . "</span></li></ul>";
         $htmlString .= "<p class='note'><span>Getting Started</span></p><p></p>";
-        // $htmlString .= "<p><a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/nexus_address/index') . "'>Nexus Addresses</a><br/><span style='font-size: 0.9em'>Before enabling SmartCalcs, set up your nexus addresses so TaxJar knows where to collect sales tax.</span></p>";
+        $htmlString .= "<p><a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/tax_nexus/index') . "'>Nexus Addresses</a><br/><span style='font-size: 0.9em'>Before enabling SmartCalcs, set up your nexus addresses so TaxJar knows where to collect sales tax.</span></p>";
         $htmlString .= "<p><a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/tax_class_product/index') . "'>Product Tax Classes</a><br/><span style='font-size: 0.9em'>If some of your products are tax-exempt, assign a TaxJar category tax code for new or existing product tax classes.</span></p>";
         $htmlString .= "<p><a href='http://www.taxjar.com/contact/' target='_blank'>Help & Support</a><br/><span style='font-size: 0.9em'>Need help setting up SmartCalcs? Get in touch with our Magento sales tax experts.</span></p><br/>";
         $htmlString .= $this->_buildConnectionHtml();

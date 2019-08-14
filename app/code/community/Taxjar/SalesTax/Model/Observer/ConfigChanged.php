@@ -17,7 +17,7 @@
 
 class Taxjar_SalesTax_Model_Observer_ConfigChanged
 {
-    public function execute($observer)
+    public function execute(Varien_Event_Observer $observer)
     {
         $this->_updateSmartcalcs();
         $this->_updateBackupRates();

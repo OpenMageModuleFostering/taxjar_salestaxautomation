@@ -20,7 +20,7 @@
  * Connect and disconnect TaxJar accounts
  */
 class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controller_Action
-{    
+{
     /**
      * Connect to TaxJar
      */
@@ -65,8 +65,12 @@ class Taxjar_SalesTax_Adminhtml_TaxjarController extends Mage_Adminhtml_Controll
      */
     public function sync_ratesAction()
     {
-        Mage::dispatchEvent('taxjar_salestax_import_data');
-        Mage::dispatchEvent('taxjar_salestax_import_rates');
+        try {
+            Mage::dispatchEvent('taxjar_salestax_import_data');
+            Mage::dispatchEvent('taxjar_salestax_import_rates');
+        } catch (Exception $e) {
+            Mage::getSingleton('core/session')->addError($e->getMessage());
+        }
     }
     
     protected function _isAllowed()

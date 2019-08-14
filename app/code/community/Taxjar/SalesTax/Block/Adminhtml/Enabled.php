@@ -34,7 +34,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Enabled extends Mage_Adminhtml_Block_Syste
         return parent::_getElementHtml($element);
     }
     
-    protected function _cacheElementValue($element)
+    protected function _cacheElementValue(Varien_Data_Form_Element_Abstract $element)
     {
         $elementValue = (string) $element->getValue();
         Mage::app()->getCache()->save($elementValue, 'taxjar_salestax_config_enabled', array('TAXJAR_SALESTAX_ENABLED'), null);

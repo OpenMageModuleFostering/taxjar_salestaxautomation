@@ -136,7 +136,7 @@ class Taxjar_SalesTax_Model_Import_Comment
                     $class = 'success';
                 } elseif ($taxRatesByState['rates_by_state'][$state] == 0 && ($taxRatesByState['rates_loaded'] == $taxRatesByState['total_rates'])) {
                     $class = 'error';
-                    $totalForState = '<a href="https://app.taxjar.com/account#states" target="_blank">Click here</a> and add a zip code for this state to load rates.';
+                    $totalForState = '<a href="' . Mage::helper('adminhtml')->getUrl('adminhtml/tax_nexus/index') . '">Click here</a> and add a zip code for this state to load rates.';
                 } else {
                     $class = 'success';
                     $totalForState = $taxRatesByState['rates_by_state'][$state] . ' rates';
@@ -176,7 +176,7 @@ class Taxjar_SalesTax_Model_Import_Comment
                     onCreate: function(request) {
                         varienLoaderHandler.handler.onCreate({options: {loaderArea: true}});
                     },
-                    onSuccess: function(data) { 
+                    onComplete: function(data) { 
                         varienLoaderHandler.handler.onComplete();
                         window.location = '{$redirectUrl}';
                     }

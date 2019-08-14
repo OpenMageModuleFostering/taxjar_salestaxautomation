@@ -33,42 +33,104 @@ class Taxjar_SalesTax_Model_Client
     }
     
     /**
-     * Connect to the API
+     * Perform a GET request
      *
      * @param string $apiKey
      * @param string $url
-     * @return string
+     * @param array $errors
+     * @return array
      */
-    public function getResource($apiKey, $resource)
+    public function getResource($apiKey, $resource, $errors = array())
     {
-        $response = $this->_getClient($apiKey, $this->_getApiUrl($resource))->request();
-
-        if ($response->isSuccessful()) {
-            $json = $response->getBody();
-            return json_decode($json, true);
-        } else {
-            if ($response->getStatus() == 403) {
-                Mage::throwException('Your last rate update was too recent. Please wait at least 5 minutes and try again.');
-            } else {
-                Mage::throwException('Could not connect to TaxJar.');
-            }
-        }
-    }  
+        $client = $this->_getClient($apiKey, $this->_getApiUrl($resource));
+        return $this->_getRequest($client, $errors);
+    }
 
     /**
-     * Client GET call
+     * Perform a POST request
+     *
+     * @param string $apiKey
+     * @param string $resource
+     * @param array $data
+     * @param array $errors
+     * @return array
+     */
+    public function postResource($apiKey, $resource, $data, $errors = array())
+    {
+        $client = $this->_getClient($apiKey, $this->_getApiUrl($resource), Zend_Http_Client::POST);
+        $client->setRawData(json_encode($data), 'application/json');
+        return $this->_getRequest($client, $errors);
+    }
+    
+    /**
+     * Perform a PUT request
+     *
+     * @param string $apiKey
+     * @param string $resource
+     * @param array $data
+     * @param array $errors
+     * @return array
+     */
+    public function putResource($apiKey, $resource, $resourceId, $data, $errors = array())
+    {
+        $resourceUrl = $this->_getApiUrl($resource) . '/' . $resourceId;
+        $client = $this->_getClient($apiKey, $resourceUrl, Zend_Http_Client::PUT);
+        $client->setRawData(json_encode($data), 'application/json');
+        return $this->_getRequest($client, $errors);
+    }
+    
+    /**
+     * Perform a DELETE request
+     *
+     * @param string $apiKey
+     * @param string $resource
+     * @param array $errors
+     * @return array
+     */
+    public function deleteResource($apiKey, $resource, $resourceId, $errors = array())
+    {
+        $resourceUrl = $this->_getApiUrl($resource) . '/' . $resourceId;
+        $client = $this->_getClient($apiKey, $resourceUrl, Zend_Http_Client::DELETE);
+        return $this->_getRequest($client, $errors);
+    }
+
+    /**
+     * Get HTTP Client
      *
      * @param string $apiKey
      * @param string $url
-     * @return Varien_Http_Client $response
+     * @return Zend_Http_Client $response
      */
-    private function _getClient($apiKey, $url)
+    private function _getClient($apiKey, $url, $method = Zend_Http_Client::GET)
     {
-        $client = new Varien_Http_Client($url);
-        $client->setMethod(Varien_Http_Client::GET);
-        $client->setHeaders('Authorization', 'Token token="' . $apiKey . '"');
+        $client = new Zend_Http_Client($url);
+        $client->setMethod($method);
+        $client->setHeaders('Authorization', 'Bearer ' . $apiKey);
 
         return $client;
+    }
+    
+    /**
+     * Get HTTP request
+     *
+     * @param Zend_Http_Client $client
+     * @param array $errors
+     * @return array
+     */
+    private function _getRequest($client, $errors = array())
+    {
+        try {
+            $response = $client->request();
+            
+            if ($response->isSuccessful()) {
+                $json = $response->getBody();
+                return json_decode($json, true);
+            } else {
+                $this->_handleError($errors, $response->getStatus());
+            }
+        } catch (Zend_Http_Client_Exception $e) {
+            Mage::throwException(Mage::helper('taxjar')->__('Could not connect to TaxJar.'));
+        }
     }
     
     /**
@@ -91,8 +153,42 @@ class Taxjar_SalesTax_Model_Client
             case 'categories':
                 $apiUrl .= '/categories';
                 break;
+            case 'nexus':
+                $apiUrl .= '/nexus/addresses';
+                break;
         }
         
         return $apiUrl;
+    }
+    
+    /**
+     * Handle API errors and throw exception
+     *
+     * @param array $customErrors
+     * @param string $statusCode
+     * @return string
+     */
+    private function _handleError($customErrors, $statusCode)
+    {
+        $errors = $this->_defaultErrors() + $customErrors;
+        
+        if ($errors[$statusCode]) {
+            Mage::throwException($errors[$statusCode]);
+        } else {
+            Mage::throwException($errors['default']);
+        }
+    }
+    
+    /**
+     * Return default API errors
+     *
+     * @return array
+     */
+    private function _defaultErrors()
+    {
+        return array(
+            '401' => Mage::helper('taxjar')->__('Your TaxJar API token is invalid. Please review your TaxJar account at https://app.taxjar.com.'),
+            'default' => Mage::helper('taxjar')->__('Could not connect to TaxJar.')
+        );
     }
 }

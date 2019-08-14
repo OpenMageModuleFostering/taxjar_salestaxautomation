@@ -32,7 +32,7 @@ class Taxjar_SalesTax_Block_Adminhtml_Backup extends Mage_Adminhtml_Block_System
         return parent::_getElementHtml($element);
     }
     
-    protected function _cacheElementValue($element)
+    protected function _cacheElementValue(Varien_Data_Form_Element_Abstract $element)
     {
         $elementValue = (string) $element->getValue();
         Mage::app()->getCache()->save($elementValue, 'taxjar_salestax_config_backup', array('TAXJAR_SALESTAX_BACKUP'), null);

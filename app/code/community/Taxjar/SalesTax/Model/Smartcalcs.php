@@ -75,10 +75,11 @@ class Taxjar_SalesTax_Model_Smartcalcs
             'amount' => (float) $address->getSubtotal(),
             'shipping' => (float) $address->getShippingAmount(),
             'line_items' => $this->_getLineItems($address),
+            'nexus_addresses' => $this->_getNexusAddresses()
         ));
 
         if ($this->_orderChanged($order)) {
-            $client = new Varien_Http_Client('https://api.taxjar.com/v2/taxes');
+            $client = new Zend_Http_Client('https://api.taxjar.com/v2/taxes');
             $client->setHeaders('Authorization', 'Bearer ' . $apiKey);
             $client->setRawData(json_encode($order), 'application/json');
             
@@ -153,9 +154,9 @@ class Taxjar_SalesTax_Model_Smartcalcs
      */
     private function _hasNexus($regionCode)
     {
-        $states = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
+        $nexusInRegion = Mage::getModel('taxjar/tax_nexus')->getCollection()->addFieldToFilter('region_code', $regionCode);
 
-        if (in_array($regionCode, $states)) {
+        if ($nexusInRegion->getSize()) {
             return true;
         } else {
             return false;
@@ -193,6 +194,30 @@ class Taxjar_SalesTax_Model_Smartcalcs
         }
 
         return $lineItems;
+    }
+    
+    /**
+     * Get nexus addresses for `nexus_addresses` param
+     *
+     * @return array
+     */
+    private function _getNexusAddresses()
+    {
+        $nexusAddresses = Mage::getModel('taxjar/tax_nexus')->getCollection();
+        $addresses = array();
+        
+        foreach($nexusAddresses as $nexusAddress) {
+            $addresses[] = array(
+                'id' => $nexusAddress->getId(),
+                'country' => $nexusAddress->getCountryId(),
+                'zip' => $nexusAddress->getPostcode(),
+                'state' => $nexusAddress->getRegionCode(),
+                'city' => $nexusAddress->getCity(),
+                'street' => $nexusAddress->getStreet()
+            );
+        }
+        
+        return $addresses;
     }
 
     /**
