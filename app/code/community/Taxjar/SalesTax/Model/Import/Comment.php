@@ -21,6 +21,8 @@
  */
 class Taxjar_SalesTax_Model_Import_Comment
 {
+    protected $_regionCode;
+    
     /**
      * Display Nexus states loaded and API Key setting
      *
@@ -29,16 +31,14 @@ class Taxjar_SalesTax_Model_Import_Comment
      */
     public function getCommentText()
     {
+        $isEnabled = Mage::getStoreConfig('tax/taxjar/backup'); 
         $regionId = Mage::getStoreConfig('shipping/origin/region_id');
-        $regionCode = Mage::getModel('directory/region')->load($regionId)->getCode();
-        $lastUpdate = Mage::getStoreConfig('taxjar/config/last_update');
+        $this->_regionCode = Mage::getModel('directory/region')->load($regionId)->getCode();
 
-        if (!empty($lastUpdate)) {
-            $states = unserialize(Mage::getStoreConfig('taxjar/config/states'));
-            $statesHtml = $this->buildStatesHtml($states, $regionCode);
-            return $this->buildInstalledHtml($statesHtml, $lastUpdate);
+        if ($isEnabled) {
+            return $this->buildEnabledHtml();
         } else {
-            return $this->buildNotYetInstalledHtml($this->fullStateName($regionCode));
+            return $this->buildDisabledHtml();
         }
     }
 
@@ -70,41 +70,45 @@ class Taxjar_SalesTax_Model_Import_Comment
     }
 
     /**
-     * Build String from State Abbr
+     * Get region name from region code
      *
-     * @param string $stateCode
+     * @param string $regionCode
      * @return string
      */
-    private function fullStateName($stateCode)
+    private function getStateName($regionCode)
     {
-        $regionModel = Mage::getModel('directory/region')->loadByCode($stateCode, 'US');
+        $regionModel = Mage::getModel('directory/region')->loadByCode($regionCode, 'US');
         return $regionModel->getDefaultName();
     }
 
     /**
-     * Build HTML for installed text
+     * Build HTML for backup rates enabled
      *
-     * @param string $statesHtml
-     * @param string $lastUpdate
      * @return string
      */
-    private function buildInstalledHtml($statesHtml, $lastUpdate)
+    private function buildEnabledHtml()
     {
-        $htmlString = "<p class='note'><span>TaxJar is installed. Check the <a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/tax_rule/index') . "'>Manage Tax Rules section</a> to verify all installed states.</span></p><br/><p>TaxJar has automatically added rates for the following states to your Magento installation:<br/><ul class='messages'>". $statesHtml . "</ul>To manage your TaxJar states <a href='https://app.taxjar.com/account#states' target='_blank'>click here</a>.</p><p>Your sales tax rates were last updated on: <ul class='messages'><li class='info-msg'><ul><li><span style='font-size: 1.4em;'>" . $lastUpdate . "</span></li></ul></li></ul><small>Rates may be automatically or manually updated again once per month. For more information on how your tax settings are changed, <a href='http://www.taxjar.com/guides/integrations/magento/' target='_blank'>click here</a>. Contact <a href='mailto:support@taxjar.com'>support@taxjar.com</a> with the email address registered to your TaxJar account if you need assistance.</small></p><p><small>If you would like to uninstall TaxJar, remove the API Token from the box above and save the config. This will remove all TaxJar rates from your Magento store. You can then uninstall in the Magento Connect Manager.<small></p><p><strong>Important Notice</strong>: Your API key may be used to install rates on only <em>one</em> Magento installation at a time.</p>";
+        $states = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
+        $htmlString = "<p class='note'><span>Download zip-based rates from TaxJar as a fallback. TaxJar uses your shipping origin and nexus addresses to sync rates rach month.</span></p><br/>";
         
+        if (!empty($states)) {
+            $htmlString .= "<ul class='messages'>" . $this->buildStatesHtml($states) . "</ul>";
+        }
+        
+        $htmlString .= $this->buildSyncHtml();
+
         return $htmlString;
     }
 
     /**
-     * Build HTML for not yet installed text
+     * Build HTML for backup rates disabled
      *
-     * @param string $regionName
      * @return string
      */
-    private function buildNotYetInstalledHtml($regionName)
+    private function buildDisabledHtml()
     {
-        $htmlString = "<p class='note'><span>Enter your TaxJar API Token</span></p><br/><p>Enter your TaxJar API Token to import current sales tax rates for all zip codes in <b>" . $regionName . "</b>, your state of origin as set in <a href='" . Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit/section/shipping') . "'>Shipping Settings</a>. We will also retrieve all other states from your TaxJar account. To get an API Token, go to <a href='https://app.taxjar.com/account' target='_blank'>TaxJar's Account Screen.</a></p><p>For more information on how your tax settings are changed, <a href='http://www.taxjar.com/guides/integrations/magento/' target='_blank'>click here</a>.</p><p><small><strong>Important Notice</strong>: Your API key may be used to install rates on only <em>one</em> Magento installation at a time.</small></p>";
-        
+        $htmlString = "<p class='note'><span>Download zip-based rates from TaxJar as a fallback. TaxJar uses your shipping origin and nexus addresses to sync rates rach month.</span></p><br/>";
+
         return $htmlString;
     }
 
@@ -115,17 +119,18 @@ class Taxjar_SalesTax_Model_Import_Comment
      * @param string $regionCode
      * @return string
      */
-    private function buildStatesHtml($states, $regionCode)
+    private function buildStatesHtml($states)
     {
-        $states[] = $regionCode;
+        $states[] = $this->_regionCode;
         $statesHtml = '';
+        $lastUpdate = Mage::getStoreConfig('tax/taxjar/last_update');
 
         sort($states);
 
         $taxRatesByState = $this->getNumberOfRatesLoaded($states);
 
         foreach (array_unique($states) as $state) {
-            if (($stateName = $this->fullStateName($state)) && !empty($stateName)) {
+            if (($stateName = $this->getStateName($state)) && !empty($stateName)) {
                 if ($taxRatesByState['rates_by_state'][$state] == 1 && ($taxRatesByState['rates_loaded'] == $taxRatesByState['total_rates'])) {
                     $totalForState = 'Origin-based rates set';
                     $class = 'success';
@@ -137,7 +142,7 @@ class Taxjar_SalesTax_Model_Import_Comment
                     $totalForState = $taxRatesByState['rates_by_state'][$state] . ' rates';
                 }
 
-                $statesHtml .= '<li class="' . $class . '-msg"><ul><li><span style="font-size: 1.4em;">' . $stateName . '</span>: ' . $totalForState . '</li></ul></li>'; 
+                $statesHtml .= '<li class="' . $class . '-msg"><ul><li style="line-height: 1.9em"><span style="font-size: 1.4em">' . $stateName . '</span>: ' . $totalForState . '</li></ul></li>'; 
             }
         }
 
@@ -148,7 +153,38 @@ class Taxjar_SalesTax_Model_Import_Comment
         }
 
         $statesHtml .= '<p class="' . $matches . '-msg" style="background: none !important;"><small>&nbsp;&nbsp;' . $taxRatesByState['total_rates'] . ' of ' . $taxRatesByState['rates_loaded'] . ' expected rates loaded.</small></p>';
+        $statesHtml .= '<p class="' . $matches . '-msg" style="background: none !important;"><small>&nbsp;&nbsp;' . 'Last synced on ' . $lastUpdate . '</small></p><br/>';
 
         return $statesHtml;   
+    }
+
+    /**
+     * Build HTML for sync button
+     *
+     * @return string
+     */
+    private function buildSyncHtml()
+    {
+        $syncUrl = Mage::helper('adminhtml')->getUrl('adminhtml/taxjar/sync_rates');
+        $redirectUrl = Mage::helper('adminhtml')->getUrl('adminhtml/system_config/edit/section/tax');
+        $syncHtml = '<p><button type="button" class="scalable" onclick="syncBackupRates()"><span>Sync Backup Rates</span></button></p><br/>';
+        $syncHtml .= <<<EOT
+        <script>
+            function syncBackupRates() {
+                new Ajax.Request('{$syncUrl}', {
+                    method: 'get',
+                    onCreate: function(request) {
+                        varienLoaderHandler.handler.onCreate({options: {loaderArea: true}});
+                    },
+                    onSuccess: function(data) { 
+                        varienLoaderHandler.handler.onComplete();
+                        window.location = '{$redirectUrl}';
+                    }
+                });
+            }
+        </script>
+EOT;
+
+        return $syncHtml;
     }
 }

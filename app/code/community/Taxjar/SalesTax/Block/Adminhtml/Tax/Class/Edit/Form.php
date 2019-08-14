@@ -21,10 +21,11 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Edit_Form extends Mage_Adminhtml
     {
         parent::_prepareForm();
 
+        $connected = Mage::getStoreConfig('tax/taxjar/connected');
         $fieldset = $this->getForm()->getElement('base_fieldset');
         $currentClass = Mage::registry('tax_class');
         
-        if ($this->getClassType() == 'PRODUCT') {
+        if ($connected && $this->getClassType() == 'PRODUCT') {
             $fieldset->addField(
                 'tj_salestax_code', 'select', array(
                     'name'  => 'tj_salestax_code',

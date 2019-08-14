@@ -57,15 +57,24 @@
             </salestax_setup>
         </resources>
         <events>
-            <admin_system_config_changed_section_taxjar>
+            <admin_system_config_changed_section_tax>
                 <observers>
                     <taxjar>
                         <type>singleton</type>
-                        <class>taxjar/observer_saveConfig</class>
+                        <class>taxjar/observer_configChanged</class>
                         <method>execute</method>
                     </taxjar>
                 </observers>
-            </admin_system_config_changed_section_taxjar>
+            </admin_system_config_changed_section_tax>
+            <taxjar_salestax_import_data>
+                <observers>
+                    <taxjar>
+                        <type>singleton</type>
+                        <class>taxjar/observer_importData</class>
+                        <method>execute</method>
+                    </taxjar>
+                </observers>
+            </taxjar_salestax_import_data>
             <taxjar_salestax_import_rates>
                 <observers>
                     <taxjar>
@@ -84,40 +93,28 @@
                     </taxjar>
                 </observers>
             </sales_quote_collect_totals_before>
+            <controller_action_predispatch>
+                <observers>
+                    <taxjar>
+                        <type>singleton</type>
+                        <class>taxjar/observer_adminNotifications</class>
+                        <method>execute</method>
+                    </taxjar>
+                </observers>
+            </controller_action_predispatch>
         </events>
     </global>
-    <frontend>
+    <admin>
         <routers>
-            <taxjar>
-                <use>standard</use>
+            <adminhtml>
                 <args>
-                    <module>Taxjar_SalesTax</module>
-                    <frontName>taxjar</frontName>
+                    <modules>
+                        <Taxjar_SalesTax after="Mage_Adminhtml">Taxjar_SalesTax_Adminhtml</Taxjar_SalesTax>
+                    </modules>
                 </args>
-            </taxjar>
+            </adminhtml>
         </routers>
-    </frontend>
-    <adminhtml>
-        <acl>
-            <resources>
-                <admin>
-                    <children>
-                        <system>
-                            <children>
-                                <config>
-                                    <children>
-                                        <taxjar>
-                                            <title>TaxJar Sales Tax Automation</title>
-                                        </taxjar>
-                                    </children>
-                                </config>
-                            </children>
-                        </system>
-                    </children>
-                </admin>
-            </resources>
-        </acl>
-    </adminhtml>
+    </admin>
     <crontab>
         <jobs>
             <taxjar>
@@ -125,9 +122,17 @@
                     <cron_expr>0 8 1 * *</cron_expr>
                 </schedule>
                 <run>
-                    <model>taxjar/observer_saveConfig::execute</model>
+                    <model>taxjar/observer_importRates::execute</model>
                 </run>
             </taxjar>
         </jobs>
     </crontab>
+    <default>
+		<tax>
+			<taxjar>
+				<product_tax_classes>2</product_tax_classes>
+				<customer_tax_classes>3</customer_tax_classes>
+			</taxjar>
+		</tax>
+    </default>
 </config>

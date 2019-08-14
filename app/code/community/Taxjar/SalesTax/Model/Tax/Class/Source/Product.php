@@ -15,16 +15,25 @@
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
-class Taxjar_SalesTax_Model_Observer_SalesQuoteCollectTotalsBefore
+/**
+ * Product Tax Classes
+ *
+ * @author Taxjar (support@taxjar.com)
+ */
+class Taxjar_SalesTax_Model_Tax_Class_Source_Product
 {
-    public function execute(Varien_Event_Observer $observer)
+    public function toOptionArray()
     {
-        $storeId = $observer->getEvent()->getQuote()->getStoreId();
+        $output = array();
+        $productClasses = Mage::getModel('tax/class')
+            ->getCollection()
+            ->addFieldToFilter('class_type', 'PRODUCT')
+            ->load();
 
-        if (Mage::getStoreConfig('tax/taxjar/enabled', $storeId)) {
-            Mage::getConfig()->setNode('global/sales/quote/totals/tax/class', 'Taxjar_SalesTax_Model_Sales_Total_Quote_Tax');
+        foreach($productClasses as $productClass) {
+            $output[] = array('value' => $productClass->getClassId(), 'label' => $productClass->getClassName());
         }
 
-        return $this;
+        return $output;
     }
 }

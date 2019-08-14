@@ -35,7 +35,7 @@ class Taxjar_SalesTax_Model_Configuration
             $taxClass = 4;
         }
 
-        $this->setConfig('tax/classes/shipping_tax_class', $taxClass);
+        $this->_setConfig('tax/classes/shipping_tax_class', $taxClass);
     }
 
     /**
@@ -52,7 +52,7 @@ class Taxjar_SalesTax_Model_Configuration
             $basis = 'origin';
         }
 
-        $this->setConfig('tax/calculation/based_on', $basis);
+        $this->_setConfig('tax/calculation/based_on', $basis);
     }
 
     /**
@@ -72,7 +72,7 @@ class Taxjar_SalesTax_Model_Configuration
         );
 
         foreach ($settings as $setting) {
-            $this->setConfig($setting, 1);
+            $this->_setConfig($setting, 1);
         }
     }
 
@@ -88,9 +88,9 @@ class Taxjar_SalesTax_Model_Configuration
         $existingUserId = $apiUser->load('taxjar', 'username')->getUserId();
 
         if (!$existingUserId) {
-            $apiUserId = $this->createApiUser($apiKey);
-            $parentRoleId = $this->createApiRoles($apiUserId);
-            $this->createApiRules($parentRoleId);
+            $apiUserId = $this->_createApiUser($apiKey);
+            $parentRoleId = $this->_createApiRoles($apiUserId);
+            $this->_createApiRules($parentRoleId);
         }
     }
 
@@ -100,9 +100,9 @@ class Taxjar_SalesTax_Model_Configuration
     * @param integer $parentRoleId
     * @return void
     */
-    private function createApiRules($parentRoleId)
+    private function _createApiRules($parentRoleId)
     {
-        foreach ($this->resourcesToAllow() as $resource) {
+        foreach ($this->_resourcesToAllow() as $resource) {
             $apiRule = Mage::getModel('api/rules');
             $apiRule->setRoleId($parentRoleId);
             $apiRule->setResourceId($resource);
@@ -111,7 +111,7 @@ class Taxjar_SalesTax_Model_Configuration
             $apiRule->save();
         }
 
-        foreach ($this->resourcesToDeny() as $resource) {
+        foreach ($this->_resourcesToDeny() as $resource) {
             $apiRule = Mage::getModel('api/rules');
             $apiRule->setRoleId($parentRoleId);
             $apiRule->setResourceId($resource);
@@ -127,7 +127,7 @@ class Taxjar_SalesTax_Model_Configuration
      * @param integer $apiUserId
      * @return integer
      */
-    private function createApiRoles($apiUserId)
+    private function _createApiRoles($apiUserId)
     {
         $parentApiRole = Mage::getModel('api/role');
         $parentApiRole->setRoleName('taxjar_api');
@@ -153,7 +153,7 @@ class Taxjar_SalesTax_Model_Configuration
      * @param void
      * @return void
      */
-    private function createApiUser($apiKey)
+    private function _createApiUser($apiKey)
     {
         $apiUser = Mage::getModel('api/user');
         $apiUser->setUsername('taxjar');
@@ -174,7 +174,7 @@ class Taxjar_SalesTax_Model_Configuration
      * @param string $value
      * @return void
      */
-    private function setConfig($path, $value)
+    private function _setConfig($path, $value)
     {
         Mage::getConfig()->saveConfig($path, $value, 'default', 0);
     }
@@ -185,7 +185,7 @@ class Taxjar_SalesTax_Model_Configuration
      * @param void
      * @return array
      */
-    private function resourcesToAllow()
+    private function _resourcesToAllow()
     {
         return array(
             'sales',
@@ -220,7 +220,7 @@ class Taxjar_SalesTax_Model_Configuration
      * @param void
      * @return array
      */
-    private function resourcesToDeny()
+    private function _resourcesToDeny()
     {
         return array(
             'core',

@@ -22,6 +22,16 @@
  */
 class Taxjar_SalesTax_Model_Client
 {
+    protected $_version = 'v2';
+    protected $_storeZip;
+    protected $_storeRegionCode;
+
+    public function __construct()
+    {
+        $this->_storeZip = trim(Mage::getStoreConfig('shipping/origin/postcode'));
+        $this->_storeRegionCode = Mage::getModel('directory/region')->load(Mage::getStoreConfig('shipping/origin/region_id'))->getCode();
+    }
+    
     /**
      * Connect to the API
      *
@@ -29,9 +39,9 @@ class Taxjar_SalesTax_Model_Client
      * @param string $url
      * @return string
      */
-    public function getResource($apiKey, $url)
+    public function getResource($apiKey, $resource)
     {
-        $response = $this->getClient($apiKey, $url)->request();
+        $response = $this->_getClient($apiKey, $this->_getApiUrl($resource))->request();
 
         if ($response->isSuccessful()) {
             $json = $response->getBody();
@@ -52,12 +62,37 @@ class Taxjar_SalesTax_Model_Client
      * @param string $url
      * @return Varien_Http_Client $response
      */
-    private function getClient($apiKey, $url)
+    private function _getClient($apiKey, $url)
     {
         $client = new Varien_Http_Client($url);
         $client->setMethod(Varien_Http_Client::GET);
         $client->setHeaders('Authorization', 'Token token="' . $apiKey . '"');
 
         return $client;
+    }
+    
+    /**
+     * Get SmartCalcs API URL
+     *
+     * @param string $type
+     * @return string
+     */
+    private function _getApiUrl($resource)
+    {
+        $apiUrl = 'https://api.taxjar.com/' . $this->_version;
+
+        switch($resource) {
+            case 'config':
+                $apiUrl .= '/plugins/magento/configuration/' . $this->_storeRegionCode;
+                break;
+            case 'rates':
+                $apiUrl .= '/plugins/magento/rates/' . $this->_storeRegionCode . '/' . $this->_storeZip;
+                break;
+            case 'categories':
+                $apiUrl .= '/categories';
+                break;
+        }
+        
+        return $apiUrl;
     }
 }

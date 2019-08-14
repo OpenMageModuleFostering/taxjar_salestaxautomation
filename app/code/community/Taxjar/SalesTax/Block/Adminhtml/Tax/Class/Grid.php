@@ -19,9 +19,11 @@ class Taxjar_SalesTax_Block_Adminhtml_Tax_Class_Grid extends Mage_Adminhtml_Bloc
 {
     protected function _prepareColumns()
     {
-        parent::_prepareColumns();
+        parent::_prepareColumns();   
 
-        if ($this->getClassType() == 'PRODUCT') {
+        $connected = Mage::getStoreConfig('tax/taxjar/connected');
+
+        if ($connected && $this->getClassType() == 'PRODUCT') {
             $this->addColumn(
                 'tj_salestax_code', array(
                     'header' => Mage::helper('taxjar')->__('TaxJar Category Code'),

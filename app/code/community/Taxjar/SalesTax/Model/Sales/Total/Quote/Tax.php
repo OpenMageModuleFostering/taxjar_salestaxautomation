@@ -31,7 +31,9 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
         $this->_roundingDeltas = array();
         $this->_baseRoundingDeltas = array();
         $this->_hiddenTaxes = array();
-        $this->_address = $address;
+        $this->_setAddress($address);
+        $this->_setAmount(0);
+        $this->_setBaseAmount(0);
         $address->setShippingTaxAmount(0);
         $address->setBaseShippingTaxAmount(0);
 
@@ -51,7 +53,7 @@ class Taxjar_SalesTax_Model_Sales_Total_Quote_Tax extends Mage_Tax_Model_Sales_T
                     $itemTax = $smartCalcs->getResponseLineItem($item->getProductId());
                     
                     if (isset($itemTax)) {
-                        $item->setTaxPercent($itemTax['combined_rate'] * 100);
+                        $item->setTaxPercent($itemTax['combined_tax_rate'] * 100);
                         $item->setTaxAmount($store->convertPrice($itemTax['tax_collectable']));
                         $item->setBaseTaxAmount($itemTax['tax_collectable']);    
                     }

@@ -25,28 +25,29 @@ class Taxjar_SalesTax_Model_Import_Rule
      * Create new tax rule based on code
      *
      * @param string $code
+     * @param integer $customerClass
      * @param integer $productClass
      * @param integer $position
-     * @param array $newRates
+     * @param array $rates
      * @return void
      */
-    public function create($code, $productClass, $position, $newRates)
+    public function create($code, $customerClasses, $productClasses, $position, $rates)
     {
         $rule = Mage::getModel('tax/calculation_rule')->load($code, 'code');
 
         $attributes = array(
             'code' => $code,
-            'tax_customer_class' => array(3),
-            'tax_product_class' => array($productClass),
-            'priority' => 1,
+            'tax_customer_class' => $customerClasses,
+            'tax_product_class' => $productClasses,
             'position' => $position,
+            'priority' => 1
         );
 
         if (isset($rule)) {
-            $attributes['tax_rate'] = array_merge($rule->getRates(), $newRates);
+            $attributes['tax_rate'] = array_merge($rule->getRates(), $rates);
             $rule->delete();
         } else {
-            $attributes['tax_rate'] = $newRates;
+            $attributes['tax_rate'] = $rates;
         }
 
         $ruleModel = Mage::getSingleton('tax/calculation_rule');

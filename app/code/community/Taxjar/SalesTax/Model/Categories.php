@@ -29,7 +29,7 @@ class Taxjar_SalesTax_Model_Categories
      */
     public function toOptionArray()
     {
-        $categories = json_decode(Mage::getStoreConfig('taxjar/config/categories'), true);
+        $categories = json_decode(Mage::getStoreConfig('tax/taxjar/categories'), true);
         $categories = Mage::helper('taxjar')->array_sort($categories, 'product_tax_code', SORT_ASC);
 
         $output = array(

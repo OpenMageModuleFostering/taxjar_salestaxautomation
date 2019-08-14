@@ -17,42 +17,68 @@
  */
 -->
 <config>
-    <tabs>
-        <taxjar translate="label" module="taxjar">
-            <label>TaxJar</label>
-            <sort_order>0</sort_order>
-        </taxjar>
-    </tabs>
     <sections>
-        <taxjar translate="label" module="taxjar">
-            <label>Sales Tax Automation</label>
-            <tab>taxjar</tab>
-            <frontend_type>text</frontend_type>
-            <sort_order>1000</sort_order>
-            <show_in_default>1</show_in_default>
-            <show_in_website>1</show_in_website>
-            <show_in_store>1</show_in_store>
+        <tax>
             <groups>
-                <config translate="label">
-                    <label>TaxJar Options</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>1</sort_order>
+                <taxjar translate="label" module="taxjar">
+                    <label>SmartCalcs by TaxJar</label>
+                    <sort_order>0</sort_order>
                     <show_in_default>1</show_in_default>
                     <show_in_website>1</show_in_website>
                     <show_in_store>1</show_in_store>
                     <expanded>1</expanded>
                     <fields>
-                        <apikey translate="label">
-                            <label>API Token</label>
+                        <enabled translate="label">
+                            <label>Enabled for Checkout</label>
+                            <comment>
+                                <model>taxjar/comment</model>
+                            </comment>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <frontend_model>taxjar/adminhtml_enabled</frontend_model>
+                            <frontend_type>select</frontend_type>
+                            <sort_order>0</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                        </enabled>
+                        <backup translate="label">
+                            <label>Backup Rates</label>
                             <comment>
                                 <model>taxjar/import_comment</model>
                             </comment>
-                            <frontend_type>text</frontend_type>
+                            <source_model>adminhtml/system_config_source_yesno</source_model>
+                            <frontend_model>taxjar/adminhtml_backup</frontend_model>
+                            <frontend_type>select</frontend_type>
                             <sort_order>1</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
-                        </apikey>
+                            <depends><connected>1</connected></depends>
+                        </backup>
+                        <product_tax_classes>
+                            <label>Backup Product Tax Classes</label>
+                            <comment>When creating or updating backup tax rules, TaxJar will use these product tax classes.</comment>
+                            <source_model>taxjar/tax_class_source_product</source_model>
+                            <frontend_model>taxjar/adminhtml_multiselect</frontend_model>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>2</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><connected>1</connected></depends>
+                        </product_tax_classes>
+                        <customer_tax_classes>
+                            <label>Backup Customer Tax Classes</label>
+                            <comment>When creating or updating backup tax rules, TaxJar will use these customer tax classes.</comment>
+                            <source_model>taxjar/tax_class_source_customer</source_model>
+                            <frontend_model>taxjar/adminhtml_multiselect</frontend_model>
+                            <frontend_type>multiselect</frontend_type>
+                            <sort_order>3</sort_order>
+                            <show_in_default>1</show_in_default>
+                            <show_in_website>1</show_in_website>
+                            <show_in_store>1</show_in_store>
+                            <depends><connected>1</connected></depends>
+                        </customer_tax_classes>
                         <debug translate="label">
                             <label>Debug Mode</label>
                             <comment>
@@ -64,31 +90,24 @@
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
                             <show_in_store>1</show_in_store>
+                            <depends><connected>1</connected></depends>
                         </debug>
-                    </fields>
-                </config>
-                <smartcalcs translate="label">
-                    <label>SmartCalcs Integration</label>
-                    <frontend_type>text</frontend_type>
-                    <sort_order>2</sort_order>
-                    <show_in_default>1</show_in_default>
-                    <show_in_website>1</show_in_website>
-                    <show_in_store>1</show_in_store>
-                    <expanded>1</expanded>
-                    <fields>
-                        <enabled translate="label">
-                            <label>Enabled</label>
-                            <comment>Optional sales tax calculations at checkout for improved accuracy and product exemptions. Zip-based rates will be used as a fallback. When enabled, your store will make more API calls.</comment>
-                            <source_model>adminhtml/system_config_source_yesno</source_model>
-                            <frontend_type>select</frontend_type>
-                            <sort_order>1</sort_order>
+                        <apikey translate="label">
+                            <label>API Token</label>
+                            <comment>Your TaxJar API token for sales tax calculations and backup rates.</comment>
+                            <frontend_type>text</frontend_type>
+                            <sort_order>11</sort_order>
                             <show_in_default>1</show_in_default>
                             <show_in_website>1</show_in_website>
-                            <show_in_store>1</show_in_store>
-                        </enabled>
+                            <show_in_store>11</show_in_store>
+                            <depends>
+                                <connected>1</connected>
+                                <debug>1</debug>
+                            </depends>
+                        </apikey>
                     </fields>
-                </smartcalcs>
+                </taxjar>    
             </groups>
-        </taxjar>
+        </tax>
     </sections>
 </config>

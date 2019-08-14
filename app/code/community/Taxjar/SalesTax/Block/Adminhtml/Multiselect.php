@@ -1,4 +1,4 @@
-<?php
+<?php 
 /**
  * Taxjar_SalesTax
  *
@@ -15,16 +15,15 @@
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
-class Taxjar_SalesTax_Model_Observer_SalesQuoteCollectTotalsBefore
+/**
+ * Config Enabled Dropdown Renderer
+ * Handle state based on presence of API token
+ */
+class Taxjar_SalesTax_Block_Adminhtml_Multiselect extends Mage_Adminhtml_Block_System_Config_Form_Field
 {
-    public function execute(Varien_Event_Observer $observer)
+    protected function _getElementHtml($element)
     {
-        $storeId = $observer->getEvent()->getQuote()->getStoreId();
-
-        if (Mage::getStoreConfig('tax/taxjar/enabled', $storeId)) {
-            Mage::getConfig()->setNode('global/sales/quote/totals/tax/class', 'Taxjar_SalesTax_Model_Sales_Total_Quote_Tax');
-        }
-
-        return $this;
+        $element->setSize(4);
+        return parent::_getElementHtml($element);
     }
 }

@@ -15,16 +15,21 @@
  * @license    http://opensource.org/licenses/osl-3.0.php Open Software License (OSL 3.0)
  */
 
-class Taxjar_SalesTax_Model_Observer_SalesQuoteCollectTotalsBefore
+class TaxJar_SalesTax_Model_Observer_AdminNotifications extends Mage_AdminNotification_Model_Feed
 {
-    public function execute(Varien_Event_Observer $observer)
+    public function getFeedUrl()
     {
-        $storeId = $observer->getEvent()->getQuote()->getStoreId();
-
-        if (Mage::getStoreConfig('tax/taxjar/enabled', $storeId)) {
-            Mage::getConfig()->setNode('global/sales/quote/totals/tax/class', 'Taxjar_SalesTax_Model_Sales_Total_Quote_Tax');
+        if (is_null($this->_feedUrl)) {
+            $this->_feedUrl = (Mage::getStoreConfigFlag(self::XML_USE_HTTPS_PATH) ? 'https://' : 'http://')
+                . 'www.taxjar.com/magento/feed.xml';
         }
+        return $this->_feedUrl;
+    }
 
-        return $this;
+    public function execute()
+    {
+        if (Mage::getSingleton('admin/session')->isLoggedIn()) {
+            $this->checkUpdate();
+        }
     }
 }

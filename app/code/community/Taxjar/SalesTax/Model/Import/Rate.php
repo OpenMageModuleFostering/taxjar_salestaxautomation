@@ -112,7 +112,7 @@ class Taxjar_SalesTax_Model_Import_Rate
      */
     private function getRegionFilter()
     {
-        $states = unserialize(Mage::getStoreConfig('taxjar/config/states'));
+        $states = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
         $filter = array();
 
         foreach (array_unique($states) as $state) {

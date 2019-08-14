@@ -37,7 +37,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
     public function initTaxForOrder($address)
     {
         $storeId = $address->getQuote()->getStore()->getId();
-        $apiKey = preg_replace('/\s+/', '', Mage::getStoreConfig('taxjar/config/apikey'));
+        $apiKey = preg_replace('/\s+/', '', Mage::getStoreConfig('tax/taxjar/apikey'));
 
         if (!$apiKey) {
             return;
@@ -47,7 +47,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
             return;
         }
 
-        if (!$this->hasNexus($address->getRegionCode())) {
+        if (!$this->_hasNexus($address->getRegionCode())) {
             return;
         }
 
@@ -74,27 +74,27 @@ class Taxjar_SalesTax_Model_Smartcalcs
         $order = array_merge($fromAddress, $toAddress, array(
             'amount' => (float) $address->getSubtotal(),
             'shipping' => (float) $address->getShippingAmount(),
-            'line_items' => $this->getLineItems($address),
+            'line_items' => $this->_getLineItems($address),
         ));
 
-        if ($this->orderChanged($order)) {
+        if ($this->_orderChanged($order)) {
             $client = new Varien_Http_Client('https://api.taxjar.com/v2/taxes');
             $client->setHeaders('Authorization', 'Bearer ' . $apiKey);
             $client->setRawData(json_encode($order), 'application/json');
             
-            $this->setSessionData('order', json_encode($order));
+            $this->_setSessionData('order', json_encode($order));
 
             try {
                 $response = $client->request('POST');
                 $this->_response = $response;
-                $this->setSessionData('response', $response);
+                $this->_setSessionData('response', $response);
             } catch (Zend_Http_Client_Exception $e) {
                 // Catch API timeouts and network issues
                 $this->_response = null;
-                $this->unsetSessionData('response');
+                $this->_unsetSessionData('response');
             }
         } else {
-            $sessionResponse = $this->getSessionData('response');
+            $sessionResponse = $this->_getSessionData('response');
             
             if (isset($sessionResponse)) {
                 $this->_response = $sessionResponse;
@@ -139,10 +139,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
                 $matchedKey = array_search($productId, Mage::helper('taxjar')->array_column($lineItems, 'id'));
                 
                 if (isset($lineItems[$matchedKey])) {
-                    $matchedItem = $lineItems[$matchedKey];
-                    $matchedItem['combined_rate'] = $matchedItem['state_sales_tax_rate'] + $matchedItem['county_tax_rate'] + $matchedItem['city_tax_rate'] + $matchedItem['special_tax_rate'];
-
-                    return $matchedItem;
+                    return $lineItems[$matchedKey];
                 }
             }
         }
@@ -154,9 +151,9 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @param  string $regionCode
      * @return bool
      */
-    private function hasNexus($regionCode)
+    private function _hasNexus($regionCode)
     {
-        $states = unserialize(Mage::getStoreConfig('taxjar/config/states'));
+        $states = unserialize(Mage::getStoreConfig('tax/taxjar/states'));
 
         if (in_array($regionCode, $states)) {
             return true;
@@ -171,7 +168,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @param  array $address
      * @return array
      */
-    private function getLineItems($address)
+    private function _getLineItems($address)
     {
         $lineItems = array();
         $items = $address->getAllItems();
@@ -204,9 +201,9 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @param  array $currentOrder
      * @return bool
      */
-    private function orderChanged($currentOrder)
+    private function _orderChanged($currentOrder)
     {
-        $sessionOrder = json_decode($this->getSessionData('order'), true);
+        $sessionOrder = json_decode($this->_getSessionData('order'), true);
 
         if ($sessionOrder) {
             return $currentOrder != $sessionOrder;
@@ -221,7 +218,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @param  string $key
      * @return object
      */
-    private function getSessionData($key)
+    private function _getSessionData($key)
     {
         return Mage::getModel('checkout/session')->getData('taxjar_salestax_' . $key);
     }
@@ -233,7 +230,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @param  string $val
      * @return object
      */
-    private function setSessionData($key, $val)
+    private function _setSessionData($key, $val)
     {
         return Mage::getModel('checkout/session')->setData('taxjar_salestax_' . $key, $val);
     }
@@ -244,7 +241,7 @@ class Taxjar_SalesTax_Model_Smartcalcs
      * @param  string $key
      * @return object
      */
-    private function unsetSessionData($key)
+    private function _unsetSessionData($key)
     {
         return Mage::getModel('checkout/session')->unsetData('taxjar_salestax_' . $key);
     }
