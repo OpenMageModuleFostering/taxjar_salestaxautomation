@@ -75,11 +75,12 @@ class Taxjar_SalesTax_Model_Smartcalcs
             'amount' => (float) $address->getSubtotal(),
             'shipping' => (float) $address->getShippingAmount(),
             'line_items' => $this->_getLineItems($address),
-            'nexus_addresses' => $this->_getNexusAddresses()
+            'nexus_addresses' => $this->_getNexusAddresses(),
+            'plugin' => 'magento'
         ));
 
         if ($this->_orderChanged($order)) {
-            $client = new Zend_Http_Client('https://api.taxjar.com/v2/taxes');
+            $client = new Zend_Http_Client('https://api.taxjar.com/v2/magento/taxes');
             $client->setHeaders('Authorization', 'Bearer ' . $apiKey);
             $client->setRawData(json_encode($order), 'application/json');
             
