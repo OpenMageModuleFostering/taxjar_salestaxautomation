@@ -1,16 +1,19 @@
 {
-    "name": "OpenMageModuleFostering/Taxjar_Salestaxautomation",
+    "name": "OpenMageModuleFostering\/Taxjar_Salestaxautomation",
     "type": "magento-module",
     "license": "OSL-3.0",
     "homepage": "",
-    "description": "Easily collect sales tax without altering your Magento store’s checkout experience or performance.",
+    "description": "Easily collect sales tax without altering your Magento store\u2019s checkout experience or performance.",
     "authors": [
-    {
-        "name": "TaxJar",
-        "email": "support@taxjar.com"
-    }
-],
+        {
+            "name": "TaxJar",
+            "email": "support@taxjar.com"
+        }
+    ],
     "suggest": {
-        "magento-hackathon/magento-composer-installer": "*"
-    }
+        "magento-hackathon\/magento-composer-installer": "*"
+    },
+    "keywords": [
+        "openmage-module"
+    ]
 }
